@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f6f3">
+    <meta name="description" content="Ontdek energieopslag met een thuisbatterij.">
+    <title>Bright House Energy — Thuisbatterij</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+      :root {
+        color-scheme: dark;
+        --ink: #f4f0e8;
+        --muted: #a09d94;
+        --paper: #11110f;
+        --line: rgba(244, 240, 232, .17);
+        --lime: #cdf467;
+        --orange: #f2764d;
+        --serif: Georgia, "Times New Roman", serif;
+        --sans: "DM Sans", sans-serif;
+        --display: "Manrope", sans-serif;
+        --mono: "DM Mono", monospace;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+      html { scroll-behavior: smooth; scroll-padding-top: 85px; }
+      body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+      body.menu-open { overflow: hidden; }
+      a { color: inherit; text-decoration: none; }
+      button { color: inherit; font: inherit; }
+      ::selection { background: var(--lime); color: var(--paper); }
+
+      .topbar {
+        height: 78px; padding: 0 7.2%; display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 1px solid var(--line); position: absolute; z-index: 20; inset: 0 0 auto;
+      }
+      .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 700 17px var(--display); letter-spacing: -.065em; }
+      .wordmark-mark { display: grid; width: 26px; height: 26px; place-items: center; color: var(--paper); background: var(--lime); border-radius: 50%; font-size: 16px; }
+      .topbar-note { color: var(--muted); font: 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+      .topbar-actions { display: flex; align-items: center; gap: 14px; }
+      .language-switch { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+      .language-switch button { min-width: 34px; padding: 7px 8px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; font: 9px var(--mono); letter-spacing: .05em; transition: background .2s,color .2s; }
+      .language-switch button[aria-pressed="true"] { background: var(--lime); color: var(--paper); }
+      .language-switch button:focus-visible, .menu-toggle:focus-visible, a:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+      .menu-toggle { display: flex; align-items: center; gap: 13px; padding: 11px 0 11px 15px; border: 0; background: transparent; cursor: pointer; font: 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+      .menu-icon { width: 34px; height: 34px; display: grid; place-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 50%; transition: background .25s, border-color .25s; }
+      .menu-icon span { width: 12px; height: 1px; background: var(--ink); transition: transform .25s; }
+      .menu-toggle:hover .menu-icon { color: var(--paper); border-color: var(--lime); background: var(--lime); }
+      .menu-toggle:hover .menu-icon span { background: var(--paper); }
+      .menu-icon span { width: 15px; }
+      .menu-toggle[aria-expanded="true"] .menu-icon span:first-child { transform: translateY(6px) rotate(45deg); }
+      .menu-toggle[aria-expanded="true"] .menu-icon span:nth-child(2) { opacity: 0; }
+      .menu-toggle[aria-expanded="true"] .menu-icon span:last-child { transform: translateY(-6px) rotate(-45deg); }
+
+      .menu-panel {
+        position: fixed; z-index: 15; inset: 0; display: flex; flex-direction: column; justify-content: center;
+        padding: 100px 12%; background: var(--lime); color: var(--paper);
+        visibility: hidden; opacity: 0; clip-path: circle(0 at calc(100% - 8%) 39px);
+        transition: clip-path .7s cubic-bezier(.77,0,.18,1), opacity .4s, visibility .7s;
+      }
+      .menu-panel.is-open { visibility: visible; opacity: 1; clip-path: circle(150% at calc(100% - 8%) 39px); }
+      .menu-kicker { margin-bottom: 30px; font: 10px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+      .menu-links { display: flex; flex-direction: column; align-items: flex-start; }
+      .menu-links a { font: 500 clamp(42px, 8vw, 100px)/1.12 var(--display); letter-spacing: -.09em; transition: opacity .2s, transform .25s; }
+      .menu-links a:hover { opacity: .55; transform: translateX(12px); }
+      .menu-bottom { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 18px; border-top: 1px solid rgba(17,17,15,.25); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+
+      .hero { min-height: 790px; height: min(100svh, 1000px); max-height: 1040px; position: relative; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: 120px 12.5% 80px; }
+      .hero::before { content: ""; position: absolute; width: min(54vw, 690px); aspect-ratio: 1; top: 50%; left: 67%; transform: translate(-50%,-46%); border: 1px solid rgba(244,240,232,.09); border-radius: 50%; box-shadow: 0 0 0 80px rgba(244,240,232,.018), 0 0 0 160px rgba(244,240,232,.014); }
+      .hero::after { content: ""; position: absolute; width: min(38vw, 485px); aspect-ratio: 1; top: 51%; left: 67%; transform: translate(-50%,-50%); border: 1px solid rgba(244,240,232,.11); border-radius: 50%; }
+      .hero-orb { position: absolute; z-index: 1; top: 50%; left: 67%; width: min(28vw, 345px); aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle at 33% 29%, #fff8c9 0, #e5ec99 11%, #b3c95c 27%, #51633a 52%, #1a2519 73%, rgba(17,17,15,.15) 100%); box-shadow: inset -35px -27px 60px rgba(0,0,0,.34), 0 0 100px rgba(205,244,103,.11); animation: float 7s ease-in-out infinite; }
+      .hero-orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: repeating-radial-gradient(ellipse at 45% 50%, transparent 0 19px, rgba(244,240,232,.1) 20px 21px, transparent 22px 30px); opacity: .3; }
+      .hero-orb { width: min(24vw, 275px); aspect-ratio: .64; border: 1px solid rgba(244,240,232,.48); border-radius: 32px; background: linear-gradient(125deg,#555a4b 0%,#262b25 46%,#171a17 100%); box-shadow: inset -20px -15px 35px rgba(0,0,0,.4), 0 0 90px rgba(205,244,103,.14); }
+      .hero-orb::before { content: ""; position: absolute; top: -11px; left: 36%; width: 28%; height: 10px; border: 1px solid rgba(244,240,232,.4); border-bottom: 0; border-radius: 5px 5px 0 0; background: #8c907e; }
+      .hero-orb::after { inset: 19px; border: 1px solid rgba(244,240,232,.13); border-radius: 20px; background: radial-gradient(circle at 50% 23px,var(--lime) 0 4px,transparent 5px),linear-gradient(180deg,transparent 24%,rgba(244,240,232,.04) 24% 25%,transparent 25%); opacity: 1; }
+      .battery-charge { position: absolute; z-index: 2; inset: auto 29% 17%; display: flex; flex-direction: column-reverse; gap: 5px; }
+      .battery-charge span { height: 4px; border-radius: 3px; background: var(--lime); opacity: .8; animation: charge 2s ease-in-out infinite alternate; }
+      .battery-charge span:nth-child(2) { animation-delay: .3s; }
+      .battery-charge span:nth-child(3) { animation-delay: .6s; }
+      .battery-charge span:nth-child(4) { animation-delay: .9s; }
+      .hero-star { position: absolute; z-index: 2; top: 27%; left: 80%; color: var(--lime); font-size: 30px; animation: rotate 18s linear infinite; }
+      .hero-copy { position: relative; z-index: 3; }
+      .eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 32px 5px; font: 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; color: var(--lime); }
+      .eyebrow::before { content: ""; width: 24px; height: 1px; background: currentColor; }
+      h1 { max-width: 790px; margin: 0; font: 500 clamp(72px, 11.4vw, 156px)/.88 var(--display); letter-spacing: -.105em; }
+      h1 .serif { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.09em; }
+      .hero-bottom { position: absolute; z-index: 4; inset: auto 7.2% 33px; display: flex; justify-content: space-between; align-items: end; }
+      .hero-description { max-width: 235px; margin: 0; color: #c7c3ba; font-size: 13px; line-height: 1.7; }
+      .hero-description strong { color: var(--ink); font-weight: 500; }
+      .scroll-note { display: flex; gap: 12px; align-items: center; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .12em; }
+      .scroll-line { width: 43px; height: 1px; background: var(--lime); transform-origin: left; animation: line-pulse 2s ease-in-out infinite; }
+      .hero-index { color: var(--muted); font: 10px var(--mono); }
+
+      .ticker { padding: 17px 0; overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .ticker-track { width: max-content; display: flex; align-items: center; animation: ticker 30s linear infinite; }
+      .ticker-item { display: flex; align-items: center; gap: 25px; padding: 0 24px; font: 10px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: #d1cec4; }
+      .ticker-item span { color: var(--lime); font-size: 15px; }
+
+      .section { padding: 140px 12.5%; }
+      .section-label { color: var(--lime); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; }
+      .intro { display: grid; grid-template-columns: 1fr 1.4fr; gap: 9%; align-items: start; }
+      .intro h2 { max-width: 700px; margin: -10px 0 36px; font: 500 clamp(40px, 6.2vw, 76px)/1.08 var(--display); letter-spacing: -.075em; }
+      .intro h2 em { color: var(--orange); font: italic 400 1.06em var(--serif); }
+      .intro-copy { max-width: 410px; margin-left: auto; padding-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+      .intro-copy p { margin: 0 0 20px; }
+      .text-link { display: inline-flex; align-items: center; gap: 13px; padding: 0 0 7px; border-bottom: 1px solid var(--lime); color: var(--ink); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .1em; }
+      .text-link span { color: var(--lime); transition: transform .2s; }
+      .text-link:hover span { transform: translate(4px,-4px); }
+
+      .work { padding-top: 35px; }
+      .work-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 36px; }
+      .work-heading h2 { margin: 14px 0 0; font: 500 clamp(40px, 6vw, 72px)/1 var(--display); letter-spacing: -.075em; }
+      .work-count { color: var(--muted); font: 10px var(--mono); }
+      .project-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 76px 28px; align-items: start; }
+      .project:nth-child(even) { margin-top: 115px; }
+      .project-visual { min-height: 350px; aspect-ratio: 1.17; position: relative; overflow: hidden; display: grid; place-items: center; }
+      .project:first-child .project-visual { background: #d9b85f; }
+      .project:nth-child(2) .project-visual { background: #80956d; }
+      .project:nth-child(3) .project-visual { background: #a7c7c2; }
+      .project:nth-child(4) .project-visual { background: #d2a6a0; }
+      .project-art { width: 68%; height: 68%; display: grid; place-items: center; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+      .project:hover .project-art { transform: scale(1.07) rotate(-2deg); }
+      .project-word { position: relative; z-index: 1; color: #f6efe1; font: 800 clamp(42px, 7vw, 92px)/.84 var(--display); letter-spacing: -.1em; text-align: center; text-shadow: 0 3px 24px rgba(0,0,0,.12); }
+      .project-one .project-art { background: #d68660; border-radius: 46% 54% 66% 34% / 43% 32% 68% 57%; transform: rotate(-12deg); }
+      .project-one .project-word { transform: rotate(12deg); font: 500 clamp(34px, 5vw, 66px) var(--serif); letter-spacing: -.07em; }
+      .project-two .project-art { position: relative; background: #234d3b; border-radius: 50%; }
+      .project-two .project-art::before, .project-two .project-art::after { content: ""; position: absolute; width: 67%; aspect-ratio: 1; border: 1px solid rgba(232,235,192,.5); border-radius: 50%; }
+      .project-two .project-art::after { width: 91%; }
+      .project-two .project-word { color: #e8ebc0; font-size: clamp(30px, 4.8vw, 60px); font-weight: 600; letter-spacing: -.11em; }
+      .project-three .project-art { background: #ec855d; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+      .project-three .project-word { padding-top: 20%; font: 500 clamp(29px, 4vw, 52px) var(--serif); letter-spacing: -.08em; }
+      .project-four .project-art { position: relative; width: 76%; height: 65%; background: #56413e; border-radius: 48% 48% 10px 10px; }
+      .project-four .project-art::before { content: ""; position: absolute; inset: 15% -8%; border: 1px solid rgba(255,231,216,.6); border-radius: 50%; transform: rotate(-27deg); }
+      .project-four .project-word { font-size: clamp(31px, 4.5vw, 58px); }
+      .project-meta { display: flex; justify-content: space-between; padding-top: 15px; font-size: 12px; }
+      .project-meta span:last-child { color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+      .benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }
+      .benefit { min-height: 225px; padding: 28px; background: var(--paper); }
+      .benefit-icon { display: grid; width: 42px; height: 42px; place-items: center; margin-bottom: 30px; border: 1px solid var(--line); border-radius: 50%; color: var(--lime); font-size: 19px; }
+      .benefit h3 { margin: 0 0 11px; font: 500 20px var(--display); letter-spacing: -.04em; }
+      .benefit p { max-width: 300px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+      .flow { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 30px; }
+      .flow-step { padding-top: 18px; border-top: 1px solid var(--line); }
+      .flow-number { color: var(--lime); font: 10px var(--mono); }
+      .flow-step h3 { margin: 24px 0 10px; font: 500 21px var(--display); }
+      .flow-step p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+      .statement { position: relative; overflow: hidden; padding: 145px 12.5% 155px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .statement::after { content: "“"; position: absolute; right: 12%; top: 60px; color: rgba(205,244,103,.09); font: 400 280px/.8 var(--serif); }
+      .statement blockquote { position: relative; z-index: 1; max-width: 970px; margin: 0; font: 500 clamp(35px, 6vw, 70px)/1.17 var(--display); letter-spacing: -.07em; }
+      .statement blockquote em { color: var(--lime); font: italic 400 1.07em var(--serif); }
+      .statement cite { display: block; margin-top: 39px; color: var(--muted); font: normal 9px var(--mono); text-transform: uppercase; letter-spacing: .12em; }
+
+      .contact { padding: 145px 12.5% 95px; }
+      .contact-top { display: flex; justify-content: space-between; align-items: start; }
+      .contact h2 { max-width: 800px; margin: 24px 0 38px; font: 500 clamp(65px, 12vw, 140px)/.91 var(--display); letter-spacing: -.105em; }
+      .contact h2 span { color: var(--lime); font: italic 400 .95em var(--serif); }
+      .contact-link { display: inline-flex; align-items: center; justify-content: space-between; gap: 55px; padding: 16px 19px; border: 1px solid var(--line); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .1em; transition: background .25s,color .25s,border .25s; }
+      .contact-link:hover { border-color: var(--lime); background: var(--lime); color: var(--paper); }
+      .contact-link span { color: var(--lime); font-size: 16px; transition: color .25s,transform .25s; }
+      .contact-link:hover span { color: var(--paper); transform: translate(3px,-3px); }
+      .footer { margin-top: 140px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+      .footer-links { display: flex; gap: 22px; }
+      .footer-links a:hover { color: var(--lime); }
+      .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s, transform .8s cubic-bezier(.2,.7,.2,1); }
+      .reveal.is-visible { opacity: 1; transform: translateY(0); }
+      .hero-copy .eyebrow, .hero-copy h1 { animation: arrive .85s both cubic-bezier(.2,.7,.2,1); }
+      .hero-copy h1 { animation-delay: .1s; }
+
+      @keyframes float { 0%,100% { translate: 0 0; } 50% { translate: 0 -17px; } }
+      @keyframes rotate { to { transform: rotate(360deg); } }
+      @keyframes ticker { to { transform: translateX(-50%); } }
+      @keyframes line-pulse { 0%,100% { transform: scaleX(.5); opacity: .5; } 50% { transform: scaleX(1); opacity: 1; } }
+      @keyframes arrive { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes charge { from { opacity: .35; transform: scaleX(.55); transform-origin: left; } to { opacity: 1; transform: scaleX(1); transform-origin: left; } }
+
+      @media (max-width: 760px) {
+        .topbar { height: 68px; padding-inline: 6%; }
+        .topbar-note { display: none; }
+        .hero { min-height: 700px; height: 92svh; max-height: 900px; padding: 120px 7% 95px; }
+        .hero::before { width: 90vw; left: 71%; top: 45%; }
+        .hero::after { width: 67vw; left: 71%; top: 46%; }
+        .hero-orb { width: 42vw; left: 71%; top: 46%; }
+        .hero-star { left: 84%; top: 27%; }
+        h1 { font-size: clamp(70px, 15vw, 112px); }
+        .hero-bottom { inset-inline: 7%; bottom: 25px; align-items: end; }
+        .hero-index { display: none; }
+        .section { padding: 95px 7%; }
+        .intro { grid-template-columns: 1fr; gap: 30px; }
+        .intro-copy { margin-left: 12%; }
+        .work { padding-top: 20px; }
+        .project-grid { grid-template-columns: 1fr; gap: 43px; }
+        .project:nth-child(even) { margin-top: 0; }
+        .project-visual { min-height: 300px; }
+        .benefit-grid { grid-template-columns: 1fr; }
+        .benefit { min-height: auto; }
+        .benefit-icon { margin-bottom: 18px; }
+        .flow { grid-template-columns: 1fr; gap: 30px; }
+        .statement { padding: 100px 7% 110px; }
+        .statement::after { right: 5%; font-size: 190px; }
+        .contact { padding: 100px 7% 30px; }
+        .contact-top { display: block; }
+        .contact h2 { margin-top: 33px; }
+        .footer { margin-top: 100px; gap: 20px; flex-wrap: wrap; }
+      }
+      @media (max-width: 420px) {
+        .topbar-actions { gap: 4px; }
+        .menu-toggle { gap: 7px; padding-left: 7px; }
+        .hero-description { max-width: 195px; font-size: 12px; }
+        .scroll-note { font-size: 8px; gap: 7px; }
+        .scroll-line { width: 23px; }
+        .menu-panel { padding-inline: 8%; }
+        .menu-bottom { gap: 18px; flex-wrap: wrap; }
+        .project-visual { min-height: 260px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        .reveal { opacity: 1; transform: none; }
+      }
+
+      :root {
+        color-scheme: light;
+        --ink: #1e2923;
+        --muted: #657169;
+        --paper: #f5f6f3;
+        --line: #dce2dc;
+        --lime: #617a55;
+        --orange: #617a55;
+      }
+      html { scroll-padding-top: 90px; }
+      body { background: var(--paper); color: var(--ink); }
+      ::selection { background: #dfe8d7; color: var(--ink); }
+      .topbar { position: sticky; inset: auto; top: 0; height: 76px; padding-inline: 8%; background: rgba(245,246,243,.96); border-color: var(--line); backdrop-filter: blur(12px); }
+      .wordmark { gap: 9px; font-size: 16px; letter-spacing: -.035em; }
+      .wordmark-mark { width: 28px; height: 28px; border-radius: 5px; background: #294335; color: #fff; font: 600 14px var(--display); }
+      .wordmark-suffix { color: var(--muted); font-weight: 400; }
+      .topbar-note { color: var(--muted); font: 11px var(--sans); letter-spacing: .02em; text-transform: none; }
+      .topbar-actions { gap: 18px; }
+      .language-switch { gap: 0; padding: 2px; border-color: var(--line); border-radius: 6px; }
+      .language-switch button { min-width: 36px; padding: 7px 9px; border-radius: 4px; color: var(--muted); font: 10px var(--sans); }
+      .language-switch button[aria-pressed="true"] { background: #294335; color: white; }
+      .language-switch button:focus-visible, .menu-toggle:focus-visible, a:focus-visible { outline-color: #617a55; }
+      .menu-toggle { gap: 10px; padding: 7px 0 7px 7px; font: 11px var(--sans); letter-spacing: .01em; text-transform: none; }
+      .menu-icon { width: 34px; height: 34px; border-color: var(--line); border-radius: 5px; }
+      .menu-icon span { background: var(--ink); }
+      .menu-toggle:hover .menu-icon { border-color: #294335; background: #294335; }
+      .menu-panel { z-index: 25; inset: 76px 0 0; justify-content: flex-start; padding: 8vh 12%; background: #edf0eb; color: var(--ink); clip-path: none; transform: translateY(-8px); transition: opacity .25s ease, transform .25s ease, visibility .25s; }
+      .menu-panel.is-open { clip-path: none; transform: translateY(0); }
+      .menu-kicker { margin-bottom: 26px; color: var(--muted); font: 11px var(--sans); letter-spacing: .04em; text-transform: none; }
+      .menu-links a { font: 500 clamp(38px, 6vw, 68px)/1.2 var(--display); letter-spacing: -.055em; }
+      .menu-links a span:last-child { color: #617a55; font-size: .55em; }
+      .menu-bottom { max-width: 900px; margin-top: 40px; padding-top: 18px; border-color: #ced7ce; font: 11px var(--sans); letter-spacing: .02em; text-transform: none; }
+      .menu-bottom .menu-contact { display: inline-flex; align-items: center; gap: 10px; color: #294335; font-weight: 700; }
+      .menu-contact:hover, .footer-contact:hover { text-decoration: underline; text-underline-offset: 4px; }
+      .gallery-options-link { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; margin-top: 20px; padding: 0 20px; border: 1px solid #294335; border-radius: 5px; background: #294335; color: #fff; font: 600 13px var(--sans); }
+      .gallery-options-link:hover { background: #405b45; }
+      .menu-toggle { display: flex; }
+      .desktop-nav, .header-cta { display: none; }
+      .gallery-photo { min-height: 200px; }
+      .hero { display: grid; grid-template-columns: minmax(0,1.12fr) minmax(260px,.88fr); grid-template-areas: "copy visual" "bottom bottom"; align-items: center; gap: 38px 8%; min-height: 650px; height: auto; max-height: none; overflow: hidden; padding: 80px 10% 38px; background: var(--paper); }
+      .hero::before, .hero::after { display: none; }
+      .hero-copy { grid-area: copy; }
+      .eyebrow { gap: 10px; margin: 0 0 23px; color: #617a55; font: 600 11px var(--sans); letter-spacing: .015em; text-transform: none; }
+      .eyebrow::before { width: 18px; }
+      h1 { max-width: 680px; font: 500 clamp(54px,6.2vw,88px)/1.04 var(--display); letter-spacing: -.075em; }
+      h1 .serif { color: #617a55; font-family: var(--display); font-style: normal; font-weight: 500; letter-spacing: inherit; }
+      .hero-orb { grid-area: visual; position: relative; top: auto; left: auto; width: min(100%,300px); height: 390px; aspect-ratio: auto; justify-self: center; margin: 0; transform: none; border: 1px solid #d7ded7; border-radius: 14px; background: linear-gradient(135deg,#fff 0%,#f9faf7 56%,#e7ece6 100%); box-shadow: 0 22px 50px rgba(28,47,34,.09); animation: none; }
+      .hero-orb::before { display: none; }
+      .hero-orb::after { inset: 12px; border: 1px solid #e7ebe6; border-radius: 9px; background: linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0)); opacity: 1; }
+      .battery-brand, .battery-capacity { position: absolute; z-index: 2; left: 23px; color: #68736a; font: 600 9px var(--sans); letter-spacing: .08em; }
+      .battery-brand { top: 24px; }
+      .battery-status { position: absolute; z-index: 2; top: 24px; right: 23px; width: 8px; height: 8px; border-radius: 50%; background: #6d8a5e; }
+      .battery-flow-label { position: absolute; z-index: 2; top: 29%; left: 0; width: 100%; color: #68736a; font: 600 9px var(--sans); letter-spacing: .08em; text-align: center; }
+      .battery-flow-evening { top: 68%; }
+      .battery-charge { inset: 40% 25% auto; gap: 8px; }
+      .battery-charge span { height: 10px; border: 1px solid #d4ded0; border-radius: 3px; background: #79936b; opacity: .8; animation: none; }
+      .battery-capacity { top: auto; bottom: 23px; }
+      .hero-star { display: none; }
+      .hero-bottom { grid-area: bottom; position: relative; inset: auto; display: flex; align-items: center; gap: 24px; margin: 16px 0 0; padding-top: 22px; border-top: 1px solid var(--line); }
+      .hero-description { max-width: 465px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+      .scroll-note { gap: 9px; color: #294335; font: 500 12px var(--sans); letter-spacing: 0; text-transform: none; }
+      .scroll-line { display: none; }
+      .section { padding: 100px 10%; }
+      .section-label { color: #617a55; font: 600 11px var(--sans); letter-spacing: .025em; text-transform: none; }
+      .intro { grid-template-columns: minmax(170px,.7fr) minmax(0,1.5fr); gap: 8%; }
+      .intro h2 { max-width: 670px; margin: 0 0 28px; font: 500 clamp(38px,5vw,62px)/1.12 var(--display); letter-spacing: -.065em; }
+      .intro h2 em { color: #617a55; font: inherit; }
+      .intro-copy { max-width: 510px; padding-top: 0; color: var(--muted); font-size: 15px; line-height: 1.75; }
+      .text-link { gap: 9px; padding-bottom: 5px; border-color: #617a55; color: #294335; font: 600 12px var(--sans); letter-spacing: 0; text-transform: none; }
+      .text-link span { color: #617a55; }
+      .work { padding-top: 42px; }
+      .work-heading { margin-bottom: 30px; }
+      .work-heading h2 { max-width: 720px; margin-top: 13px; font: 500 clamp(36px,4.6vw,58px)/1.1 var(--display); letter-spacing: -.06em; }
+      .benefit-grid { gap: 0; border: 1px solid var(--line); background: transparent; }
+      .benefit { min-height: 235px; padding: 27px; background: transparent; }
+      .benefit + .benefit { border-left: 1px solid var(--line); }
+      .benefit-icon { width: 34px; height: 34px; margin-bottom: 26px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: #617a55; font: 600 10px var(--sans); }
+      .benefit h3 { margin-bottom: 10px; font: 600 18px/1.35 var(--sans); letter-spacing: -.025em; }
+      .benefit p, .flow-step p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+      .flow { gap: 28px; margin-top: 12px; }
+      .flow-step { padding-top: 18px; border-color: #cbd4cb; }
+      .flow-number { color: #617a55; font: 600 10px var(--sans); letter-spacing: .06em; }
+      .flow-step h3 { margin: 20px 0 9px; font: 600 18px/1.35 var(--sans); letter-spacing: -.02em; }
+      .assessment { display: grid; grid-template-columns: 1fr 1fr; gap: 8%; align-items: end; padding: 72px 10%; background: #e9eee8; }
+      .assessment h2 { max-width: 500px; margin: 16px 0 0; font: 500 clamp(34px,4.3vw,54px)/1.1 var(--display); letter-spacing: -.06em; }
+      .assessment p { max-width: 520px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
+      .contact { padding: 110px 10% 30px; }
+      .contact h2 { max-width: 740px; margin: 23px 0 32px; font: 500 clamp(58px,8vw,100px)/1 var(--display); letter-spacing: -.08em; }
+      .contact h2 span { color: #617a55; font: inherit; }
+      .contact-link { min-height: 52px; gap: 32px; padding: 14px 17px; border: 1px solid #294335; border-radius: 5px; background: #294335; color: #fff; font: 600 13px var(--sans); letter-spacing: 0; text-transform: none; }
+      .contact-link:hover { border-color: #405b45; background: #405b45; color: #fff; }
+      .contact-link span { color: #fff; }
+      .contact-top > .section-label { color: var(--muted); font: 13px/1.6 var(--sans); }
+      .footer { min-height: 72px; margin-top: 95px; padding-top: 18px; border-color: var(--line); color: var(--muted); font: 11px var(--sans); letter-spacing: 0; text-transform: none; }
+      .footer-links a:hover { color: #294335; }
+      .reveal { transform: translateY(12px); transition-duration: .45s; }
+      .hero-copy .eyebrow, .hero-copy h1 { animation: none; }
+      @media (min-width: 761px) {
+        .hero {
+          width: min(100%, 1600px);
+          min-height: clamp(650px, calc(100svh - 76px), 850px);
+          margin-inline: auto;
+          padding: clamp(70px, 8vh, 110px) clamp(72px, 10vw, 160px) 42px;
+          column-gap: clamp(60px, 9vw, 150px);
+        }
+        .hero-copy { max-width: 700px; }
+        h1 { font-size: clamp(72px, 7.2vw, 104px); }
+        .hero-orb { width: clamp(290px, 25vw, 360px); height: clamp(390px, 34vw, 460px); }
+        .hero-bottom { width: 100%; max-width: 1280px; justify-self: center; }
+        .section, .contact { padding-right: clamp(72px, 10vw, 160px); padding-left: clamp(72px, 10vw, 160px); }
+        .section { max-width: 1600px; margin-inline: auto; }
+        .assessment { padding-right: max(clamp(72px, 10vw, 160px), calc((100% - 1280px) / 2)); padding-left: max(clamp(72px, 10vw, 160px), calc((100% - 1280px) / 2)); }
+        .benefit { min-height: 250px; padding: 32px; }
+      }
+      .topbar { height: 82px; padding-inline: max(5%, calc((100% - 1400px) / 2)); }
+      .desktop-nav { display: flex; align-items: center; gap: clamp(24px, 3vw, 46px); margin-left: auto; margin-right: 34px; }
+      .desktop-nav a { color: #35463b; font: 500 13px var(--sans); transition: color .18s; }
+      .desktop-nav a:hover { color: #7c955d; }
+      .topbar-actions { gap: 14px; }
+      .header-cta, .hero-cta { display: inline-flex; align-items: center; justify-content: center; gap: 18px; min-height: 44px; padding: 0 18px; border-radius: 4px; background: #087c59; color: white; font: 600 13px var(--sans); transition: background .2s,transform .2s; }
+      .header-cta:hover, .hero-cta:hover { transform: translateY(-1px); background: #066849; }
+      .menu-toggle { display: flex; }
+      .breadcrumbs { display: flex; align-items: center; gap: 11px; width: min(100% - 64px, 1400px); margin: 0 auto; padding: 17px 0 19px; color: #626e65; font: 12px var(--sans); }
+      .breadcrumbs a { color: #34483a; }
+      .breadcrumbs > span:nth-child(2) { color: #a5ada6; }
+      .hero { display: block; width: min(100% - 48px, 1440px); min-height: 0; height: auto; margin: 0 auto; padding: 0; overflow: visible; background: transparent; }
+      .hero-scene { position: relative; min-height: 580px; overflow: hidden; border-radius: 18px; background: #dbe5dc; }
+      .home-illustration { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .hero-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; width: min(430px, 42%); min-height: 430px; margin: 45px 0 0 48px; padding: 36px; border-radius: 12px; background: rgba(255,255,255,.96); box-shadow: 0 14px 44px rgba(37,54,42,.13); }
+      .hero-copy .eyebrow { margin: 0 0 20px; }
+      .hero-copy h1 { font-size: clamp(48px,5vw,68px); line-height: 1.01; }
+      .hero-copy .hero-description { max-width: 320px; margin: 20px 0 25px; color: var(--muted); font-size: 15px; line-height: 1.65; }
+      .hero-cta { min-height: 48px; }
+      .hero-facts { display: flex; align-items: center; gap: 42px; min-height: 82px; padding: 0 28px; border-bottom: 1px solid var(--line); }
+      .hero-facts > span { display: flex; align-items: center; gap: 11px; color: #34483a; font: 500 13px var(--sans); }
+      .hero-facts i { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid #dce2dc; border-radius: 50%; color: #617a55; font: normal 10px var(--sans); }
+      .hero-facts > a { display: flex; align-items: center; gap: 9px; margin-left: auto; color: #34483a; font: 600 12px var(--sans); }
+      .assessment { scroll-margin-top: 100px; }
+      .topbar { position: absolute; inset: 0 0 auto; height: 82px; padding-inline: max(5%, calc((100% - 1400px) / 2)); background: rgba(25,38,31,.28); border-color: rgba(255,255,255,.18); }
+      .topbar .wordmark, .topbar .menu-toggle { color: #fff; }
+      .topbar .wordmark-mark { background: #fff; color: #294335; }
+      .topbar .wordmark-suffix { color: rgba(255,255,255,.75); }
+      .topbar .language-switch { border-color: rgba(255,255,255,.35); }
+      .topbar .language-switch button { color: rgba(255,255,255,.84); }
+      .topbar .language-switch button[aria-pressed="true"] { background: #fff; color: #294335; }
+      .desktop-nav, .header-cta { display: none; }
+      .topbar-actions { margin-left: auto; }
+      .breadcrumbs { display: none; }
+      .hero { display: block; width: 100%; min-height: 0; height: auto; margin: 0; padding: 0; overflow: visible; background: transparent; }
+      .hero-scene { position: relative; min-height: clamp(580px, 66vw, 760px); overflow: hidden; border-radius: 0; background: #eef1ed; }
+      .hero-scene::after { display: none; }
+      .home-illustration { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .photo-placeholder { border: 2px dashed #bdc8be; background: rgba(255,255,255,.24); }
+      .hero-copy { position: absolute; z-index: 1; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; width: min(850px, 88%); min-height: 0; margin: 0 auto; padding: 82px 0 76px; color: var(--ink); text-align: center; }
+      .hero-copy .eyebrow { justify-content: center; margin: 0 0 22px; color: #617a55; }
+      .hero-copy .eyebrow::before { display: none; }
+      .hero-copy h1 { max-width: 850px; font-size: clamp(62px,8vw,112px); line-height: .99; letter-spacing: -.075em; }
+      .hero-copy h1 .serif { color: #617a55; }
+      .hero-copy .hero-description { max-width: 540px; margin: 22px 0 27px; color: var(--muted); font-size: 17px; line-height: 1.65; }
+      .hero-cta { min-height: 50px; padding-inline: 21px; }
+      .hero-facts { position: absolute; z-index: 1; inset: auto 0 0; display: flex; align-items: center; justify-content: center; gap: 50px; min-height: 72px; padding: 0 24px; border-top: 1px solid var(--line); color: var(--ink); }
+      .hero-facts > span { display: flex; align-items: center; gap: 10px; color: var(--ink); font: 500 13px var(--sans); }
+      .hero-facts i { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid #bdc8be; border-radius: 50%; color: var(--ink); font: normal 10px var(--sans); }
+      .hero-facts > a { color: var(--ink); }
+      .intro { grid-template-columns: minmax(0,1fr) minmax(320px,.9fr); gap: clamp(48px,8vw,120px); align-items: center; }
+      .intro-story { max-width: 620px; }
+      .intro h2 { margin-top: 18px; }
+      .featured-battery { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 16px 40px rgba(28,47,34,.07); }
+      .featured-battery-art { position: relative; display: grid; min-height: 260px; place-items: center; overflow: hidden; background: #eef1ed; }
+      .featured-battery-art.photo-placeholder { border-width: 0 0 2px; }
+      .featured-battery-art::before { display: none; }
+      .featured-device { position: relative; width: 142px; height: 196px; border: 1px solid rgba(255,255,255,.55); border-radius: 14px; background: linear-gradient(135deg,#58715c,#2c4636); box-shadow: 0 19px 36px rgba(35,58,42,.2); }
+      .featured-device::before { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 9px; }
+      .featured-device::after { content: ""; position: absolute; left: 50%; top: 47%; width: 38px; height: 54px; transform: translate(-50%,-50%); border-radius: 5px; background: repeating-linear-gradient(to bottom,#c6d7b9 0 4px,transparent 4px 13px); }
+      .featured-device-status { position: absolute; top: 23px; right: 24px; width: 7px; height: 7px; border-radius: 50%; background: #d8e7b2; }
+      .featured-battery-body { padding: 24px 27px 26px; }
+      .featured-battery-meta { display: flex; justify-content: space-between; color: #718075; font: 11px var(--sans); }
+      .featured-battery-body h3 { margin: 14px 0 8px; font: 600 21px var(--sans); letter-spacing: -.03em; }
+      .featured-battery-body p { margin: 0 0 17px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+      .featured-battery-body a { display: inline-flex; align-items: center; gap: 8px; color: #294335; font: 600 13px var(--sans); }
+      .featured-battery-body a span { color: #087c59; }
+      .work-heading { align-items: end; gap: 32px; }
+      .work-heading h2 { margin-top: 14px; }
+      .work-heading > p { max-width: 340px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+      .benefit-grid { gap: 20px; border: 0; background: transparent; }
+      .benefit { min-height: 250px; padding: 26px; border: 1px solid var(--line); border-radius: 9px; background: #fff; transition: transform .2s,box-shadow .2s; }
+      .benefit:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(35,58,42,.08); }
+      .benefit + .benefit { border-left: 1px solid var(--line); }
+      .benefit-icon { width: 40px; height: 40px; margin-bottom: 26px; border: 1px solid var(--line); border-radius: 50%; background: #eef2ed; color: #294335; font: 600 12px var(--sans); }
+      .section-heading-copy { max-width: 700px; }
+      @media (min-width: 761px) {
+        .hero-scene { min-height: clamp(620px, 70vh, 790px); }
+        .hero-copy { padding-top: 100px; }
+        .section, .contact { padding-right: clamp(72px, 10vw, 160px); padding-left: clamp(72px, 10vw, 160px); }
+        .section { max-width: 1600px; margin-inline: auto; }
+        .benefit { min-height: 270px; padding: 32px; }
+      }
+      @media (max-width: 760px) {
+        .topbar { position: sticky; height: 68px; padding-inline: 6%; background: rgba(245,246,243,.96); border-color: var(--line); }
+        .topbar .wordmark, .topbar .menu-toggle { color: var(--ink); }
+        .topbar .wordmark-mark { background: #294335; color: #fff; }
+        .topbar .wordmark-suffix { color: var(--muted); }
+        .topbar .language-switch { border-color: var(--line); }
+        .topbar .language-switch button { color: var(--muted); }
+        .topbar .language-switch button[aria-pressed="true"] { background: #294335; color: #fff; }
+        .desktop-nav, .header-cta { display: none; }
+        .menu-toggle { display: flex; }
+        .menu-panel { inset-block-start: 68px; }
+        .hero-scene { min-height: 560px; }
+        .home-illustration { object-position: 53% center; }
+        .hero-copy { width: min(560px, 90%); padding: 90px 16px 96px; }
+        .hero-copy h1 { font-size: clamp(46px,9vw,68px); }
+        .hero-copy .hero-description { font-size: 15px; }
+        .hero-facts { flex-wrap: wrap; justify-content: flex-start; gap: 12px 25px; min-height: 82px; padding: 14px 18px; }
+        .hero-facts > span { font-size: 12px; }
+        .hero-facts > a { margin-left: auto; }
+        .intro { grid-template-columns: 1fr; gap: 32px; }
+        .intro-story { max-width: 620px; }
+        .featured-battery { max-width: 560px; }
+        .work-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+      }
+      @media (max-width: 420px) {
+        .wordmark-suffix { display: none; }
+        .hero-scene { min-height: 560px; }
+        .hero-copy { padding-inline: 20px; }
+        .hero-copy h1 { font-size: 43px; }
+        .hero-facts { align-items: flex-start; flex-direction: column; gap: 10px; padding-block: 13px; }
+        .hero-facts > a { margin-left: 0; }
+      }
+      @media (max-width: 760px) {
+        .topbar { height: 68px; padding-inline: 6%; }
+        .topbar-note { display: none; }
+        .desktop-nav, .header-cta { display: none; }
+        .menu-toggle { display: flex; }
+        .menu-panel { inset-block-start: 68px; padding: 8vh 7%; }
+        .breadcrumbs { width: auto; margin: 0 7%; padding-block: 14px; }
+        .hero { width: auto; margin: 0 16px; padding: 0; }
+        .hero-scene { min-height: 540px; border-radius: 14px; }
+        .home-illustration { width: 100%; height: 100%; object-fit: cover; object-position: 60% center; }
+        .hero-copy { width: min(440px, 74%); min-height: 0; margin: 30px 0 0 24px; padding: 27px; }
+        .hero-copy h1 { font-size: clamp(44px,8vw,64px); }
+        .hero-facts { flex-wrap: wrap; gap: 14px 24px; padding: 17px 5px; }
+        .hero-facts > a { margin-left: auto; }
+        .section { padding: 78px 7%; }
+        .intro { grid-template-columns: 1fr; gap: 25px; }
+        .intro-copy { max-width: 580px; margin-left: 0; }
+        .work { padding-top: 28px; }
+        .benefit-grid { grid-template-columns: 1fr; }
+        .benefit { min-height: 0; padding: 23px; }
+        .benefit + .benefit { border-top: 1px solid var(--line); border-left: 0; }
+        .benefit-icon { margin-bottom: 17px; }
+        .flow { grid-template-columns: 1fr; gap: 26px; }
+        .flow-step { padding-top: 15px; }
+        .flow-step h3 { margin-top: 13px; }
+        .assessment { grid-template-columns: 1fr; gap: 24px; padding: 62px 7%; }
+        .contact { padding: 78px 7% 28px; }
+        .contact-top { display: block; }
+        .contact-top > .section-label { display: block; margin-top: 32px; }
+        .footer { margin-top: 76px; gap: 18px; flex-wrap: wrap; }
+      }
+      @media (max-width: 420px) {
+        .topbar-actions { gap: 4px; }
+        .menu-toggle { gap: 7px; padding-left: 7px; }
+        .wordmark-suffix { display: none; }
+        .hero-scene { min-height: 560px; }
+        .home-illustration { object-position: 60% center; }
+        .hero-copy { width: calc(100% - 32px); margin: 20px 16px 0; padding: 23px; }
+        .hero-copy h1 { font-size: 43px; }
+        .hero-facts { align-items: flex-start; flex-direction: column; gap: 13px; }
+        .hero-facts > a { margin-left: 0; }
+        .menu-bottom { gap: 18px; flex-wrap: wrap; }
+      }
+      .topbar { position: absolute; inset: 0 0 auto; height: 82px; padding-inline: max(5%, calc((100% - 1400px) / 2)); background: rgba(25,38,31,.28); border-color: rgba(255,255,255,.18); }
+      .topbar .wordmark, .topbar .desktop-nav a, .topbar .menu-toggle { color: #fff; }
+      .topbar .wordmark-mark { background: #fff; color: #294335; }
+      .topbar .wordmark-suffix { color: rgba(255,255,255,.75); }
+      .topbar .language-switch { border-color: rgba(255,255,255,.35); }
+      .topbar .language-switch button { color: rgba(255,255,255,.84); }
+      .topbar .language-switch button[aria-pressed="true"] { background: #fff; color: #294335; }
+      .desktop-nav { display: flex; align-items: center; gap: clamp(24px, 3vw, 46px); margin-left: auto; margin-right: 34px; }
+      .desktop-nav a { color: #fff; font: 500 13px var(--sans); transition: color .18s; }
+      .desktop-nav a:hover { color: #d5e4d5; }
+      .menu-toggle { display: none; }
+      .breadcrumbs { display: none; }
+      .hero { display: block; width: 100%; min-height: 0; height: auto; margin: 0; padding: 0; overflow: visible; background: transparent; }
+      .hero-scene { position: relative; min-height: clamp(580px, 66vw, 760px); overflow: hidden; border-radius: 0; background: #43584b; }
+      .hero-scene::after { content: ""; position: absolute; z-index: 0; inset: 0; background: linear-gradient(90deg,rgba(15,29,23,.48),rgba(15,29,23,.08) 70%),linear-gradient(0deg,rgba(15,29,23,.35),transparent 38%); }
+      .home-illustration { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 63%; }
+      .hero-copy { position: absolute; z-index: 1; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; width: min(850px, 88%); min-height: 0; margin: 0 auto; padding: 82px 0 76px; color: #fff; text-align: center; }
+      .hero-copy .eyebrow { justify-content: center; margin: 0 0 22px; color: #e1eadb; }
+      .hero-copy .eyebrow::before { display: none; }
+      .hero-copy h1 { max-width: 850px; font-size: clamp(62px,8vw,112px); line-height: .99; letter-spacing: -.075em; }
+      .hero-copy h1 .serif { color: #e3eddc; }
+      .hero-copy .hero-description { max-width: 540px; margin: 22px 0 27px; color: rgba(255,255,255,.92); font-size: 17px; line-height: 1.65; }
+      .hero-cta { min-height: 50px; padding-inline: 21px; }
+      .hero-facts { position: absolute; z-index: 1; inset: auto 0 0; display: flex; align-items: center; justify-content: center; gap: 50px; min-height: 72px; padding: 0 24px; border-top: 1px solid rgba(255,255,255,.3); color: white; }
+      .hero-facts > span { display: flex; align-items: center; gap: 10px; color: white; font: 500 13px var(--sans); }
+      .hero-facts i { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid rgba(255,255,255,.5); border-radius: 50%; color: white; font: normal 10px var(--sans); }
+      .hero-facts > a { color: white; }
+      .intro { grid-template-columns: minmax(0,1fr) minmax(320px,.9fr); gap: clamp(48px,8vw,120px); align-items: center; }
+      .intro-story { max-width: 620px; }
+      .intro h2 { margin-top: 18px; }
+      .featured-battery { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 16px 40px rgba(28,47,34,.07); }
+      .featured-battery-art { position: relative; display: grid; min-height: 260px; place-items: center; overflow: hidden; background: linear-gradient(145deg,#e9eee7,#d6e0d5); }
+      .featured-battery-art::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(67,95,73,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(67,95,73,.08) 1px,transparent 1px); background-size: 36px 36px; mask-image: linear-gradient(90deg,transparent,#000); }
+      .featured-device { position: relative; width: 142px; height: 196px; border: 1px solid rgba(255,255,255,.55); border-radius: 14px; background: linear-gradient(135deg,#58715c,#2c4636); box-shadow: 0 19px 36px rgba(35,58,42,.2); }
+      .featured-device::before { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 9px; }
+      .featured-device::after { content: ""; position: absolute; left: 50%; top: 47%; width: 38px; height: 54px; transform: translate(-50%,-50%); border-radius: 5px; background: repeating-linear-gradient(to bottom,#c6d7b9 0 4px,transparent 4px 13px); }
+      .featured-device-status { position: absolute; top: 23px; right: 24px; width: 7px; height: 7px; border-radius: 50%; background: #d8e7b2; }
+      .featured-battery-body { padding: 24px 27px 26px; }
+      .featured-battery-meta { display: flex; justify-content: space-between; color: #718075; font: 11px var(--sans); }
+      .featured-battery-body h3 { margin: 14px 0 8px; font: 600 21px var(--sans); letter-spacing: -.03em; }
+      .featured-battery-body p { margin: 0 0 17px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+      .featured-battery-body a { display: inline-flex; align-items: center; gap: 8px; color: #294335; font: 600 13px var(--sans); }
+      .featured-battery-body a span { color: #087c59; }
+      .work-heading { align-items: end; gap: 32px; }
+      .work-heading h2 { margin-top: 14px; }
+      .work-heading > p { max-width: 340px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+      .benefit-grid { gap: 20px; border: 0; background: transparent; }
+      .benefit { min-height: 250px; padding: 26px; border: 1px solid var(--line); border-radius: 9px; background: #fff; transition: transform .2s,box-shadow .2s; }
+      .benefit:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(35,58,42,.08); }
+      .benefit + .benefit { border-left: 1px solid var(--line); }
+      .benefit-icon { width: 40px; height: 40px; margin-bottom: 26px; border: 1px solid var(--line); border-radius: 50%; background: #eef2ed; color: #294335; font: 600 12px var(--sans); }
+      .section-heading-copy { max-width: 700px; }
+      @media (min-width: 761px) {
+        .hero-scene { min-height: clamp(620px, 70vh, 790px); }
+        .hero-copy { padding-top: 100px; }
+        .section, .contact { padding-right: clamp(72px, 10vw, 160px); padding-left: clamp(72px, 10vw, 160px); }
+        .section { max-width: 1600px; margin-inline: auto; }
+        .benefit { min-height: 270px; padding: 32px; }
+      }
+      @media (max-width: 760px) {
+        .topbar { position: sticky; height: 68px; padding-inline: 6%; background: rgba(245,246,243,.96); border-color: var(--line); }
+        .topbar .wordmark, .topbar .menu-toggle { color: var(--ink); }
+        .topbar .wordmark-mark { background: #294335; color: #fff; }
+        .topbar .wordmark-suffix { color: var(--muted); }
+        .topbar .language-switch { border-color: var(--line); }
+        .topbar .language-switch button { color: var(--muted); }
+        .topbar .language-switch button[aria-pressed="true"] { background: #294335; color: #fff; }
+        .desktop-nav, .header-cta { display: none; }
+        .menu-toggle { display: flex; }
+        .menu-panel { inset-block-start: 68px; }
+        .hero-scene { min-height: 560px; }
+        .home-illustration { object-position: 53% center; }
+        .hero-copy { width: min(560px, 90%); padding: 90px 16px 96px; }
+        .hero-copy h1 { font-size: clamp(46px,9vw,68px); }
+        .hero-copy .hero-description { font-size: 15px; }
+        .hero-facts { flex-wrap: wrap; justify-content: flex-start; gap: 12px 25px; min-height: 82px; padding: 14px 18px; }
+        .hero-facts > span { font-size: 12px; }
+        .hero-facts > a { margin-left: auto; }
+        .intro { grid-template-columns: 1fr; gap: 32px; }
+        .intro-story { max-width: 620px; }
+        .featured-battery { max-width: 560px; }
+        .work-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+      }
+      @media (max-width: 420px) {
+        .wordmark-suffix { display: none; }
+        .hero-scene { min-height: 560px; }
+        .hero-copy { padding-inline: 20px; }
+        .hero-copy h1 { font-size: 43px; }
+        .hero-facts { align-items: flex-start; flex-direction: column; gap: 10px; padding-block: 13px; }
+        .hero-facts > a { margin-left: 0; }
+      }
+      .hero-scene > .hero-copy { position: absolute; inset: 0; width: min(850px,88%); max-width: none; height: 100%; min-height: 0; margin: 0 auto; padding: 82px 0 76px; border-radius: 0; background: transparent; box-shadow: none; }
+      .hero-editable { outline: none; }
+      .hero-editable:empty::before { content: attr(data-placeholder); color: rgba(255,255,255,.76); font: inherit; letter-spacing: normal; }
+      .hero-editable:focus-visible { outline: 2px dashed rgba(255,255,255,.85); outline-offset: 8px; }
+      .hero-copy h1.hero-editable { min-height: 1em; }
+      .hero-copy h1.hero-editable:empty::before { display: block; max-width: 620px; font: 500 clamp(24px,3vw,36px)/1.2 var(--sans); letter-spacing: 0; }
+      .hero-description.hero-editable { min-height: 1.65em; }
+      .hero-cta .hero-editable { min-width: 120px; min-height: 1.4em; }
+      .hero-cta .hero-editable:empty::before { color: rgba(255,255,255,.8); font: 12px var(--sans); }
+      .hero-scene { background: #eef1ed; }
+      .hero-scene::after { display: none; }
+      .hero-scene > .hero-copy { color: var(--ink); }
+      .hero-scene > .hero-copy .eyebrow { color: #617a55; }
+      .hero-scene > .hero-copy .hero-description { color: var(--muted); }
+      .home-illustration { object-fit: unset; }
+      .featured-battery-art { background: #eef1ed; }
+      .featured-battery-art::before { display: none; }
+      [data-editable-text] { cursor: text; white-space: pre-wrap; }
+      [data-editable-text]:hover { outline: 1px dashed rgba(41,67,53,.5); outline-offset: 2px; }
+      [data-editable-text]:focus-visible { outline: 2px dashed #617a55; outline-offset: 3px; }
+      .language-switch button { min-width: 36px; }
+      .photo-carousel { margin-top: 42px; }
+      .photo-gallery-page { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+      .gallery-photo { min-height: 220px; border-radius: 8px; }
+      @media (max-width: 760px) {
+        .language-switch button { min-width: 30px; padding-inline: 5px; }
+        .photo-gallery-page { grid-template-columns: 1fr; gap: 12px; }
+        .gallery-photo { min-height: 170px; }
+      }
+      .menu-toggle { display: flex; }
+      .topbar { background: rgba(245,246,243,.96); border-color: var(--line); backdrop-filter: blur(12px); }
+      .topbar .wordmark, .topbar .menu-toggle { color: var(--ink); }
+      .topbar .wordmark-mark { background: #294335; color: #fff; }
+      .topbar .wordmark-suffix { color: var(--muted); }
+      .topbar .language-switch { border-color: var(--line); }
+      .topbar .language-switch button { color: var(--muted); }
+      .topbar .language-switch button[aria-pressed="true"] { background: #294335; color: #fff; }
+      .hero-copy > .hero-editable:empty::before { color: var(--muted); }
+      .topbar { padding-inline: 0; }
+      .topbar-actions { gap: 14px; margin-left: auto; }
+      .menu-toggle { padding-right: 0; }
+      .topbar .wordmark-mark { margin-left: 10px; }
+      @media (min-width: 761px) {
+        .work-heading h2[data-i18n="whyTitle"] { max-width: none; font-size: clamp(24px,3.5vw,48px); white-space: nowrap; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="#home" aria-label="Bright House Energy home" data-i18n-aria="brandHome"><span class="wordmark-mark">B</span> Bright House <span class="wordmark-suffix">Energy</span></a>
+      <div class="topbar-actions">
+        <div class="language-switch" role="group" aria-label="Choose language" data-i18n-aria="languageSelector">
+          <button type="button" data-language="en" aria-pressed="false" aria-label="English">EN</button>
+          <button type="button" data-language="nl" aria-pressed="true" aria-label="Nederlands">NL</button>
+          <button type="button" data-language="fr" aria-pressed="false" aria-label="Français">FR</button>
+        </div>
+        <button class="menu-toggle" type="button" aria-label="Menu openen" data-i18n-aria="menuToggle" aria-expanded="false" aria-controls="site-menu">
+          <span class="menu-label" data-i18n="menu">Menu</span><span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="menu-panel" id="site-menu" aria-label="Main navigation" data-i18n-aria="navigation" inert>
+      <span class="menu-kicker" data-i18n="navIntro">Home battery storage</span>
+      <div class="menu-links">
+        <a href="#benefits"><span data-i18n="navBenefits">Why a home battery</span><span aria-hidden="true"> ↗</span></a>
+        <a href="#how"><span data-i18n="navHow">How it works</span><span aria-hidden="true"> ↗</span></a>
+        <a href="#assessment"><span data-i18n="navAdvice">Advice</span><span aria-hidden="true"> ↗</span></a>
+      </div>
+      <div class="menu-bottom"><span data-i18n="menuNote">Gebruik meer van je eigen zonnestroom.</span><a class="menu-contact" href="https://forms.gle/DbxtDKChzLVAiyuH7" target="_blank" rel="noopener noreferrer"><span data-i18n="contactCta">Contactformulier</span><span aria-hidden="true">↗</span></a></div>
+    </nav>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="hero-scene">
+          <div class="home-illustration photo-placeholder" aria-hidden="true"></div>
+          <div class="hero-copy">
+            <h1 class="hero-editable" contenteditable="true" role="textbox" aria-label="Hero headline. Click and type to edit." aria-multiline="true" data-hero-copy="headline" data-placeholder="Click here and type your headline" data-placeholder-key="heroHeadlinePlaceholder" data-aria-label-key="heroHeadlineLabel"></h1>
+            <p class="hero-description hero-editable" contenteditable="true" role="textbox" aria-label="Hero description. Click and type to edit." aria-multiline="true" data-hero-copy="description" data-placeholder="Click here and type a short description" data-placeholder-key="heroDescriptionPlaceholder" data-aria-label-key="heroDescriptionLabel"></p>
+            <a class="hero-cta" href="#contact"><span class="hero-editable" contenteditable="true" role="textbox" aria-label="Button label. Click and type to edit." aria-multiline="false" data-hero-copy="button" data-placeholder="Type button text" data-placeholder-key="heroButtonPlaceholder" data-aria-label-key="heroButtonLabel"></span><span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="hero-facts">
+          <span><i aria-hidden="true">01</i><span data-i18n="heroFactOne">Store surplus solar power</span></span>
+          <span><i aria-hidden="true">02</i><span data-i18n="heroFactTwo">Use it when you need it</span></span>
+          <a href="#benefits"><span data-i18n="scrollLabel">Explore the benefits</span><span aria-hidden="true">↓</span></a>
+        </div>
+      </section>
+
+      <section class="section intro reveal" id="benefits">
+        <div class="intro-story">
+          <span class="section-label" data-i18n="benefitsLabel">01 / Home energy storage</span>
+          <h2><span data-i18n="benefitsTitleOne">Use more of</span><br><em data-i18n="benefitsTitleTwo">your own solar.</em></h2>
+          <div class="intro-copy">
+            <p data-i18n="benefitsCopyOne">When your solar panels produce more electricity than your home is using, a compatible home battery can store some of that surplus.</p>
+            <p data-i18n="benefitsCopyTwo">Use stored energy later, when your panels are producing less. The amount you can store depends on your system and household use.</p>
+            <a href="#how" class="text-link"><span data-i18n="benefitsLink">How battery storage works</span> <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <article class="featured-battery">
+          <div class="featured-battery-art photo-placeholder" aria-hidden="true"></div>
+          <div class="featured-battery-body">
+            <div class="featured-battery-meta"><span data-i18n="featuredLabel">A closer look</span><span>01</span></div>
+            <h3 data-i18n="featuredTitle">Home battery storage</h3>
+            <p data-i18n="featuredCopy">Store part of your solar surplus and use it later, depending on your system and household demand.</p>
+            <a href="#how"><span data-i18n="featuredLink">See how it works</span><span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+      </section>
+
+      <section class="section work reveal">
+        <div class="work-heading">
+          <div class="section-heading-copy"><span class="section-label" data-i18n="whyLabel">02 / What a battery can do</span><h2 data-i18n="whyTitle">Put stored solar energy to use.</h2></div>
+          <p data-i18n="whyDescription">A home battery can help you use more of the electricity your panels produce. What makes sense depends on your home.</p>
+        </div>
+        <div class="benefit-grid">
+          <article class="benefit">
+            <span class="benefit-icon" aria-hidden="true">01</span>
+            <h3 data-i18n="benefitOneTitle">Use solar after sunset</h3>
+            <p data-i18n="benefitOneCopy">Store some of your daytime surplus and use it in the evening, subject to the battery’s available charge.</p>
+          </article>
+          <article class="benefit">
+            <span class="benefit-icon" aria-hidden="true">02</span>
+            <h3 data-i18n="benefitTwoTitle">Shift when you use energy</h3>
+            <p data-i18n="benefitTwoCopy">A battery can help move some electricity use beyond daylight hours. Results depend on your routine and energy plan.</p>
+          </article>
+          <article class="benefit">
+            <span class="benefit-icon" aria-hidden="true">03</span>
+            <h3 data-i18n="benefitThreeTitle">Plan around your home</h3>
+            <p data-i18n="benefitThreeCopy">Battery size and compatibility depend on your solar installation, electricity use and available space.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section work reveal" id="how">
+        <div class="work-heading">
+          <div class="section-heading-copy"><span class="section-label" data-i18n="howLabel">03 / How it works</span><h2 data-i18n="howTitle">Three steps to stored solar power.</h2></div>
+        </div>
+        <div class="flow">
+          <article class="flow-step"><span class="flow-number">01 — <span data-i18n="stepDay">DAYTIME</span></span><h3 data-i18n="stepOneTitle">Solar powers your home first</h3><p data-i18n="stepOneCopy">Your panels supply the electricity your home needs. Surplus can charge a connected battery.</p></article>
+          <article class="flow-step"><span class="flow-number">02 — <span data-i18n="stepStore">STORAGE</span></span><h3 data-i18n="stepTwoTitle">The battery stores surplus</h3><p data-i18n="stepTwoCopy">The battery stores available excess energy, up to its capacity and charging limits.</p></article>
+          <article class="flow-step"><span class="flow-number">03 — <span data-i18n="stepEvening">LATER</span></span><h3 data-i18n="stepThreeTitle">Use stored energy later</h3><p data-i18n="stepThreeCopy">When solar production drops, your home can use the stored electricity. The grid can supply any shortfall.</p></article>
+        </div>
+        <div class="photo-carousel" aria-label="Fotogalerij" data-i18n-aria="galleryLabel">
+          <div class="photo-gallery-page">
+            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 1"></div>
+            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 2"></div>
+            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 3"></div>
+            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 4"></div>
+            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 5"></div>
+            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 6"></div>
+          </div>
+        </div>
+        <a class="gallery-options-link" href="mogelijkheden.html" target="_blank" rel="noopener noreferrer" data-i18n="allOptionsCta">Bekijk alle mogelijkheden</a>
+      </section>
+
+      <section class="assessment reveal" id="assessment">
+        <div><span class="section-label" data-i18n="assessmentLabel">Before choosing a battery</span><h2 data-i18n="assessmentTitle">Start with your energy use.</h2></div>
+        <p data-i18n="assessmentCopy">The right system depends on your solar production, household consumption, tariff and installation. A home assessment can help establish whether storage is a good fit.</p>
+      </section>
+
+      <section class="contact" id="contact">
+        <div class="contact-top reveal">
+          <div>
+            <span class="section-label" data-i18n="contactLabel">Discuss your home</span>
+            <h2><span data-i18n="contactLineOne">Find the right</span><br><span data-i18n="contactLineTwo">battery setup.</span></h2>
+            <a class="contact-link" href="https://forms.gle/DbxtDKChzLVAiyuH7" target="_blank" rel="noopener noreferrer"><span data-i18n="contactCta">Request a home assessment</span></a>
+          </div>
+          <span class="section-label" data-i18n="contactAside">Share a little about<br>your solar setup.</span>
+        </div>
+        <footer class="footer">
+          <a class="wordmark" href="#home" aria-label="Bright House Energy home" data-i18n-aria="brandHome"><span class="wordmark-mark">B</span> Bright House <span class="wordmark-suffix">Energy</span></a>
+          <span data-i18n="footerNote">Home battery storage</span>
+          <div class="footer-links"><a href="#benefits" data-i18n="footerBenefits">Voordelen</a><a href="#how" data-i18n="footerHow">Zo werkt het</a><a class="footer-contact" href="https://forms.gle/DbxtDKChzLVAiyuH7" target="_blank" rel="noopener noreferrer" data-i18n="contactCta">Contactformulier</a><a href="#home" data-i18n="footerTop">Terug naar boven ↑</a></div>
+        </footer>
+      </section>
+    </main>
+
+    <script>
+      const translations = {
+        en: {
+          pageTitle: "Bright House Energy — Home battery storage",
+          description: "Explore home battery storage for solar energy.",
+          brandHome: "Bright House Energy home",
+          navigation: "Main navigation",
+          languageSelector: "Choose language",
+          menuToggle: "Open menu",
+          menuCloseToggle: "Close menu",
+          languageEnglish: "English",
+          languageDutch: "Dutch",
+          languageFrench: "French",
+          heroHeadlinePlaceholder: "Click here and type your headline",
+          heroHeadlineLabel: "Hero headline. Click and type to edit.",
+          heroDescriptionPlaceholder: "Click here and type a short description",
+          heroDescriptionLabel: "Hero description. Click and type to edit.",
+          heroButtonPlaceholder: "Type button text",
+          heroButtonLabel: "Button label. Click and type to edit.",
+          galleryPhoto: "Photo",
+          allOptionsCta: "View all options",
+          batteryBrand: "BRIGHT HOUSE · ENERGY STORAGE",
+          batteryChargeLabel: "SOLAR SURPLUS",
+          batteryUseLabel: "STORED FOR LATER",
+          batteryCapacity: "HOME BATTERY",
+          tagline: "Home battery systems",
+          headerCta: "Get advice",
+          menu: "Menu",
+          close: "Close",
+          navIntro: "Home battery storage",
+          navHome: "Home",
+          navBenefits: "Benefits",
+          navHow: "How it works",
+          navAdvice: "Advice",
+          navContact: "Contact",
+          breadcrumbLabel: "Breadcrumb",
+          breadcrumbCurrent: "Home battery",
+          menuNote: "Make more use of your solar energy.",
+          menuAvailability: "Advice for your home",
+          heroEyebrow: "Home battery storage",
+          heroLineOne: "Store your",
+          heroLineTwo: "solar power",
+          heroLineThree: "for later.",
+          heroDescription: "Store surplus solar electricity during the day and use it at home later.",
+          heroCta: "Find out what suits your home",
+          galleryLabel: "Photo gallery",
+          heroFactOne: "Store surplus solar power",
+          heroFactTwo: "Use it when you need it",
+          scrollLabel: "Explore the benefits",
+          benefitsLabel: "01 / Home energy storage",
+          benefitsTitleOne: "Use more of",
+          benefitsTitleTwo: "your own solar.",
+          benefitsCopyOne: "When your solar panels produce more electricity than your home is using, a compatible home battery can store some of that surplus.",
+          benefitsCopyTwo: "Use stored energy later, when your panels are producing less. The amount you can store depends on your system and household use.",
+          benefitsLink: "How battery storage works",
+          featuredLabel: "A closer look",
+          featuredTitle: "Home battery storage",
+          featuredCopy: "Store part of your solar surplus and use it later, depending on your system and household demand.",
+          featuredLink: "See how it works",
+          whyLabel: "02 / What a battery can do",
+          whyTitle: "Put stored solar energy to use.",
+          whyDescription: "A home battery can help you use more of the electricity your panels produce. What makes sense depends on your home.",
+          benefitOneTitle: "Use solar after sunset",
+          benefitOneCopy: "Store some of your daytime surplus and use it in the evening, subject to the battery’s available charge.",
+          benefitTwoTitle: "Shift when you use energy",
+          benefitTwoCopy: "A battery can help move some electricity use beyond daylight hours. Results depend on your routine and energy plan.",
+          benefitThreeTitle: "Plan around your home",
+          benefitThreeCopy: "Battery size and compatibility depend on your solar installation, electricity use and available space.",
+          howLabel: "03 / How it works",
+          howTitle: "Three steps to stored solar power.",
+          stepDay: "DAYTIME",
+          stepStore: "STORAGE",
+          stepEvening: "LATER",
+          stepOneTitle: "Solar powers your home first",
+          stepOneCopy: "Your panels supply the electricity your home needs. Surplus can charge a connected battery.",
+          stepTwoTitle: "The battery stores surplus",
+          stepTwoCopy: "The battery stores available excess energy, up to its capacity and charging limits.",
+          stepThreeTitle: "Use stored energy later",
+          stepThreeCopy: "When solar production drops, your home can use the stored electricity. The grid can supply any shortfall.",
+          assessmentLabel: "Before choosing a battery",
+          assessmentTitle: "Start with your energy use.",
+          assessmentCopy: "The right system depends on your solar production, household consumption, tariff and installation. A home assessment can help establish whether storage is a good fit.",
+          contactLabel: "Discuss your home",
+          contactLineOne: "Find the right",
+          contactLineTwo: "battery setup.",
+          contactCta: "Contact form",
+          contactAside: "Share a little about\nyour solar setup.",
+          footerNote: "Home battery storage",
+          footerBenefits: "Benefits",
+          footerHow: "How it works",
+          footerTop: "Back to top ↑"
+        },
+        nl: {
+          pageTitle: "Bright House Energy — Thuisbatterij",
+          description: "Ontdek energieopslag met een thuisbatterij.",
+          brandHome: "Bright House Energy startpagina",
+          navigation: "Hoofdnavigatie",
+          languageSelector: "Kies een taal",
+          menuToggle: "Menu openen",
+          menuCloseToggle: "Menu sluiten",
+          languageEnglish: "Engels",
+          languageDutch: "Nederlands",
+          languageFrench: "Frans",
+          heroHeadlinePlaceholder: "Klik hier en typ je titel",
+          heroHeadlineLabel: "Titel. Klik en typ om te bewerken.",
+          heroDescriptionPlaceholder: "Klik hier en typ een korte beschrijving",
+          heroDescriptionLabel: "Beschrijving. Klik en typ om te bewerken.",
+          heroButtonPlaceholder: "Typ de knoptekst",
+          heroButtonLabel: "Knoptekst. Klik en typ om te bewerken.",
+          galleryLabel: "Fotogalerij",
+          galleryPhoto: "Foto",
+          allOptionsCta: "Bekijk alle mogelijkheden",
+          batteryBrand: "BRIGHT HOUSE · ENERGIEOPSLAG",
+          batteryChargeLabel: "OVERSCHOT ZONNESTROOM",
+          batteryUseLabel: "OPGESLAGEN VOOR LATER",
+          batteryCapacity: "THUISBATTERIJ",
+          tagline: "Thuisbatterijen en energieopslag",
+          headerCta: "Vraag advies",
+          menu: "Menu",
+          close: "Sluiten",
+          navIntro: "Thuisbatterij en opslag",
+          navHome: "Home",
+          navBenefits: "Waarom een thuisbatterij",
+          navHow: "Zo werkt het",
+          navAdvice: "Advies",
+          navContact: "Contact",
+          breadcrumbLabel: "Broodkruimelnavigatie",
+          breadcrumbCurrent: "Thuisbatterij",
+          menuNote: "Gebruik meer van je eigen zonnestroom.",
+          menuAvailability: "Persoonlijk advies voor thuis",
+          heroEyebrow: "Thuisbatterijen en energieopslag",
+          heroLineOne: "Sla je",
+          heroLineTwo: "zonnestroom op",
+          heroLineThree: "voor later.",
+          heroDescription: "Sla overtollige zonnestroom overdag op en gebruik die later in huis.",
+          heroCta: "Ontdek wat bij jouw woning past",
+          heroFactOne: "Sla overtollige zonnestroom op",
+          heroFactTwo: "Gebruik stroom wanneer jij wilt",
+          scrollLabel: "Bekijk de voordelen",
+          benefitsLabel: "01 / Energieopslag voor thuis",
+          benefitsTitleOne: "Gebruik meer van",
+          benefitsTitleTwo: "je eigen zonnestroom.",
+          benefitsCopyOne: "Wekken je zonnepanelen meer stroom op dan je op dat moment verbruikt? Een compatibele thuisbatterij kan een deel van die stroom opslaan.",
+          benefitsCopyTwo: "Gebruik de opgeslagen energie later, wanneer je panelen minder opwekken. Hoeveel je kunt opslaan hangt af van je systeem en verbruik.",
+          benefitsLink: "Zo werkt energieopslag",
+          featuredLabel: "Van dichtbij bekeken",
+          featuredTitle: "Thuisbatterij",
+          featuredCopy: "Sla een deel van je zonnestroom op en gebruik die later, afhankelijk van je systeem en stroomverbruik.",
+          featuredLink: "Bekijk hoe het werkt",
+          whyLabel: "02 / Wat een batterij voor je doet",
+          whyTitle: "Gebruik je opgeslagen zonnestroom.",
+          whyDescription: "Met een thuisbatterij kun je meer van je eigen zonnestroom gebruiken. Wat bij je past hangt af van je woning.",
+          benefitOneTitle: "Gebruik zonnestroom na zonsondergang",
+          benefitOneCopy: "Sla een deel van je dagelijkse overschot op en gebruik het 's avonds, zolang je batterij voldoende geladen is.",
+          benefitTwoTitle: "Verplaats je stroomverbruik",
+          benefitTwoCopy: "Een batterij kan helpen om stroom op andere momenten te gebruiken. Het resultaat hangt af van je verbruik en energiecontract.",
+          benefitThreeTitle: "Afgestemd op jouw woning",
+          benefitThreeCopy: "De capaciteit en geschiktheid hangen af van je zonnepanelen, stroomverbruik en beschikbare ruimte.",
+          howLabel: "03 / Zo werkt het",
+          howTitle: "Zonnestroom opslaan in drie stappen.",
+          stepDay: "OVERDAG",
+          stepStore: "OPSLAG",
+          stepEvening: "LATER",
+          stepOneTitle: "Je zonnepanelen leveren stroom",
+          stepOneCopy: "Je panelen leveren eerst de stroom die je thuis nodig hebt. Overschot kan een aangesloten batterij opladen.",
+          stepTwoTitle: "De batterij slaat overschot op",
+          stepTwoCopy: "De batterij slaat beschikbare extra stroom op, tot de capaciteit en laadlimieten zijn bereikt.",
+          stepThreeTitle: "Gebruik de stroom later",
+          stepThreeCopy: "Wekken je panelen minder op, dan kan je huis de opgeslagen stroom gebruiken. Het stroomnet vult een eventueel tekort aan.",
+          assessmentLabel: "Een batterij kiezen",
+          assessmentTitle: "Begin bij je energieverbruik.",
+          assessmentCopy: "De juiste oplossing hangt af van je zonne-opwek, verbruik, energiecontract en installatie. Met een adviesgesprek kun je bepalen of een batterij bij jouw situatie past.",
+          contactLabel: "Bespreek je thuissituatie",
+          contactLineOne: "Een oplossing",
+          contactLineTwo: "voor jouw huis.",
+          contactCta: "Contactformulier",
+          contactAside: "Vertel ons over\nje zonnestroomsysteem.",
+          footerNote: "Thuisbatterijen en energieopslag",
+          footerBenefits: "Voordelen",
+          footerHow: "Zo werkt het",
+          footerTop: "Terug naar boven ↑"
+        },
+        fr: {
+          pageTitle: "Bright House Energy — Batterie domestique",
+          description: "Découvrez le stockage de l’énergie solaire avec une batterie domestique.",
+          brandHome: "Accueil Bright House Energy",
+          navigation: "Navigation principale",
+          languageSelector: "Choisir la langue",
+          menuToggle: "Ouvrir le menu",
+          menuCloseToggle: "Fermer le menu",
+          languageEnglish: "Anglais",
+          languageDutch: "Néerlandais",
+          languageFrench: "Français",
+          heroHeadlinePlaceholder: "Cliquez ici et saisissez votre titre",
+          heroHeadlineLabel: "Titre principal. Cliquez pour modifier.",
+          heroDescriptionPlaceholder: "Cliquez ici et saisissez une description",
+          heroDescriptionLabel: "Description. Cliquez pour modifier.",
+          heroButtonPlaceholder: "Saisissez le texte du bouton",
+          heroButtonLabel: "Texte du bouton. Cliquez pour modifier.",
+          galleryPhoto: "Photo",
+          allOptionsCta: "Voir toutes les options",
+          batteryBrand: "BRIGHT HOUSE · STOCKAGE D’ÉNERGIE",
+          batteryChargeLabel: "SURPLUS SOLAIRE",
+          batteryUseLabel: "STOCKÉ POUR PLUS TARD",
+          batteryCapacity: "BATTERIE DOMESTIQUE",
+          tagline: "Batteries domestiques",
+          headerCta: "Contact",
+          menu: "Menu",
+          close: "Fermer",
+          navIntro: "Batterie domestique et stockage",
+          navHome: "Accueil",
+          navBenefits: "Avantages",
+          navHow: "Fonctionnement",
+          navAdvice: "Conseils",
+          navContact: "Contact",
+          breadcrumbLabel: "Fil d’Ariane",
+          breadcrumbCurrent: "Batterie domestique",
+          menuNote: "Utilisez davantage votre énergie solaire.",
+          menuAvailability: "Conseils personnalisés pour votre maison",
+          heroEyebrow: "Stockage d’énergie à domicile",
+          heroLineOne: "Stockez votre",
+          heroLineTwo: "énergie solaire",
+          heroLineThree: "pour plus tard.",
+          heroDescription: "Stockez le surplus d’électricité solaire produit pendant la journée pour l’utiliser plus tard chez vous.",
+          heroCta: "Trouvez la solution adaptée à votre maison",
+          heroFactOne: "Stockez le surplus solaire",
+          heroFactTwo: "Utilisez-le quand vous en avez besoin",
+          scrollLabel: "Découvrez les avantages",
+          benefitsLabel: "01 / Stockage d’énergie à domicile",
+          benefitsTitleOne: "Utilisez davantage",
+          benefitsTitleTwo: "votre propre énergie solaire.",
+          benefitsCopyOne: "Lorsque vos panneaux solaires produisent plus d’électricité que votre maison n’en consomme, une batterie compatible peut stocker une partie du surplus.",
+          benefitsCopyTwo: "Utilisez l’énergie stockée lorsque vos panneaux produisent moins. La quantité stockable dépend de votre installation et de votre consommation.",
+          benefitsLink: "Comment fonctionne le stockage",
+          featuredLabel: "En détail",
+          featuredTitle: "Batterie domestique",
+          featuredCopy: "Stockez une partie de votre surplus solaire et utilisez-la plus tard, selon votre installation et vos besoins.",
+          featuredLink: "Voir le fonctionnement",
+          whyLabel: "02 / Les avantages d’une batterie",
+          whyTitle: "Utilisez l’énergie solaire stockée.",
+          whyDescription: "Une batterie domestique peut vous aider à utiliser davantage l’électricité produite par vos panneaux. La solution dépend de votre logement.",
+          benefitOneTitle: "Utilisez l’énergie solaire après le coucher du soleil",
+          benefitOneCopy: "Stockez une partie de votre surplus diurne et utilisez-la le soir, selon le niveau de charge disponible.",
+          benefitTwoTitle: "Décalez votre consommation d’énergie",
+          benefitTwoCopy: "Une batterie peut vous aider à utiliser une partie de l’électricité en dehors des heures d’ensoleillement. Les résultats dépendent de vos habitudes et de votre contrat.",
+          benefitThreeTitle: "Une solution adaptée à votre maison",
+          benefitThreeCopy: "La capacité et la compatibilité dépendent de votre installation solaire, de votre consommation et de l’espace disponible.",
+          galleryLabel: "Galerie de photos",
+          howLabel: "03 / Fonctionnement",
+          howTitle: "Stockez l’énergie solaire en trois étapes.",
+          stepDay: "JOUR",
+          stepStore: "STOCKAGE",
+          stepEvening: "PLUS TARD",
+          stepOneTitle: "Le solaire alimente d’abord votre maison",
+          stepOneCopy: "Vos panneaux fournissent d’abord l’électricité nécessaire à votre maison. Le surplus peut recharger une batterie connectée.",
+          stepTwoTitle: "La batterie stocke le surplus",
+          stepTwoCopy: "La batterie stocke l’énergie excédentaire disponible, dans la limite de sa capacité et de ses limites de charge.",
+          stepThreeTitle: "Utilisez l’énergie plus tard",
+          stepThreeCopy: "Lorsque la production solaire diminue, votre maison peut utiliser l’électricité stockée. Le réseau peut compléter si nécessaire.",
+          assessmentLabel: "Avant de choisir une batterie",
+          assessmentTitle: "Commencez par votre consommation.",
+          assessmentCopy: "La solution adaptée dépend de votre production solaire, de votre consommation, de votre tarif et de votre installation. Un bilan à domicile peut vous aider à déterminer si une batterie vous convient.",
+          contactLabel: "Parlons de votre maison",
+          contactLineOne: "Une solution",
+          contactLineTwo: "pour votre maison.",
+          contactCta: "Formulaire de contact",
+          contactAside: "Parlez-nous de\nvotre installation solaire.",
+          footerNote: "Batteries domestiques et stockage d’énergie",
+          footerBenefits: "Avantages",
+          footerHow: "Fonctionnement",
+          footerTop: "Retour en haut ↑"
+        }
+      };
+
+      const toggle = document.querySelector(".menu-toggle");
+      const menu = document.querySelector(".menu-panel");
+      const menuLabel = document.querySelector(".menu-label");
+      const savedText = new Map();
+      let savedLanguage = null;
+      try {
+        savedLanguage = localStorage.getItem("brightHouseLanguage");
+      } catch (error) {
+        console.error("Could not restore the saved language.", error);
+      }
+      let currentLanguage = Object.hasOwn(translations, savedLanguage) ? savedLanguage : "nl";
+
+      function localizedStorageKey(id, language) {
+        return `brightHouseText.${id}.${language}`;
+      }
+
+      function getLocalizedText(id, language) {
+        try {
+          return localStorage.getItem(localizedStorageKey(id, language));
+        } catch (error) {
+          console.error(`Could not restore saved text for "${id}" in ${language}.`, error);
+          return null;
+        }
+      }
+
+      function makeEditable(field, id) {
+        field.contentEditable = "true";
+        field.dataset.editableText = id;
+        const link = field.closest("a");
+        const button = field.closest("button");
+        field.title = link
+          ? "Click to edit this text; Shift-click the link to follow it"
+          : button
+            ? "Click to edit this text; Shift-click to use this control"
+            : "Click to edit this text";
+        const storageKey = `brightHouseText.${id}`;
+        const isTranslated = field.hasAttribute("data-i18n");
+        try {
+          const legacyHeroKey = field.dataset.heroCopy
+            ? `brightHouseHero.${field.dataset.heroCopy}`
+            : null;
+          const oldSaved = localStorage.getItem(storageKey);
+          let saved = isTranslated
+            ? localStorage.getItem(localizedStorageKey(id, currentLanguage))
+            : oldSaved;
+          if (isTranslated && oldSaved !== null && oldSaved !== "tekst") {
+            const currentLanguageKey = localizedStorageKey(id, currentLanguage);
+            const languageSaved = localStorage.getItem(currentLanguageKey);
+            if (languageSaved === null) {
+              const migratedText = currentLanguage === "en" && id === "translation-contactCta-0" && oldSaved.trim().toLowerCase() === "formulier"
+                ? "Contact form"
+                : oldSaved;
+              localStorage.setItem(currentLanguageKey, migratedText);
+              saved = migratedText;
+            } else {
+              saved = languageSaved;
+            }
+          }
+          if (!isTranslated && saved === null) {
+            saved = legacyHeroKey ? localStorage.getItem(legacyHeroKey) : null;
+          }
+          if (saved !== null && saved !== "tekst") {
+            if (!isTranslated) savedText.set(id, saved);
+            field.textContent = saved;
+          }
+        } catch (error) {
+          console.error(`Could not restore saved text for "${id}".`, error);
+        }
+        field.addEventListener("input", () => {
+          const text = field.textContent;
+          if (!isTranslated) savedText.set(id, text);
+          try {
+            localStorage.setItem(isTranslated ? localizedStorageKey(id, currentLanguage) : storageKey, text);
+          } catch (error) {
+            console.error(`Could not save text for "${id}".`, error);
+          }
+        });
+      }
+
+      const translationFieldCounts = new Map();
+      document.querySelectorAll("[data-i18n]").forEach((field) => {
+        const key = field.dataset.i18n;
+        const occurrence = translationFieldCounts.get(key) || 0;
+        translationFieldCounts.set(key, occurrence + 1);
+        const id = `translation-${key}-${occurrence}`;
+        if (field.closest("a[target='_blank']")) field.dataset.editableText = id;
+        else makeEditable(field, id);
+      });
+
+      document.querySelectorAll("[data-hero-copy]").forEach((field) => {
+        makeEditable(field, `hero-${field.dataset.heroCopy}`);
+      });
+
+      const textWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      while (textWalker.nextNode()) textNodes.push(textWalker.currentNode);
+      let plainTextIndex = 0;
+      textNodes.forEach((node) => {
+        if (!node.textContent.trim()) return;
+        const parent = node.parentElement;
+        if (!parent || parent.closest("script, style, button, [data-i18n], [data-hero-copy]")) return;
+        const field = document.createElement("span");
+        parent.replaceChild(field, node);
+        field.appendChild(node);
+        makeEditable(field, `plain-${plainTextIndex++}`);
+      });
+
+      document.addEventListener("click", (event) => {
+        const editable = event.target.closest("[contenteditable='true']");
+        if (editable && !event.shiftKey && !editable.closest("a[target='_blank'], .menu-links a, .footer-links a[href='#home']")) event.preventDefault();
+      });
+
+      document.querySelector("[data-hero-copy='button']").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") event.preventDefault();
+      });
+
+      function setLanguage(language) {
+        const copy = translations[language];
+        if (!copy) return;
+
+        currentLanguage = language;
+        document.documentElement.lang = language;
+        document.title = copy.pageTitle;
+        document.querySelector('meta[name="description"]').content = copy.description;
+        document.querySelectorAll("[data-i18n]").forEach((element) => {
+          const text = copy[element.dataset.i18n];
+          if (text !== undefined) {
+            const customText = getLocalizedText(element.dataset.editableText, language);
+            element.textContent = customText === null || customText === "tekst" ? text : customText;
+          }
+        });
+        document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+          const label = copy[element.dataset.i18nAria];
+          if (label !== undefined) element.setAttribute("aria-label", label);
+        });
+        toggle.setAttribute("aria-label", copy[toggle.getAttribute("aria-expanded") === "true" ? "menuCloseToggle" : "menuToggle"]);
+        document.querySelectorAll("[data-language]").forEach((button) => {
+          const languageNames = { en: copy.languageEnglish, nl: copy.languageDutch, fr: copy.languageFrench };
+          button.setAttribute("aria-label", languageNames[button.dataset.language] || button.dataset.language.toUpperCase());
+        });
+        document.querySelectorAll("[data-language]").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.language === language));
+        });
+        const menuText = getLocalizedText(menuLabel.dataset.editableText, language);
+        menuLabel.textContent = menuText === null || menuText === "tekst"
+          ? (toggle.getAttribute("aria-expanded") === "true" ? copy.close : copy.menu)
+          : menuText;
+        document.querySelectorAll("[data-hero-copy][data-placeholder]").forEach((field) => {
+          field.dataset.placeholder = copy[field.dataset.placeholderKey];
+          field.setAttribute("aria-label", copy[field.dataset.ariaLabelKey]);
+        });
+        document.querySelectorAll(".gallery-photo").forEach((photo, index) => {
+          photo.setAttribute("aria-label", `${copy.galleryPhoto} ${index + 1}`);
+        });
+        try {
+          localStorage.setItem("brightHouseLanguage", language);
+        } catch (error) {
+          console.error("Could not save the selected language.", error);
+        }
+      }
+
+      function setMenuOpen(open) {
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute("aria-label", translations[currentLanguage][open ? "menuCloseToggle" : "menuToggle"]);
+        menu.classList.toggle("is-open", open);
+        menu.inert = !open;
+        document.body.classList.toggle("menu-open", open);
+        const menuText = getLocalizedText(menuLabel.dataset.editableText, currentLanguage);
+        menuLabel.textContent = menuText === null || menuText === "tekst"
+          ? (open ? translations[currentLanguage].close : translations[currentLanguage].menu)
+          : menuText;
+        if (open) menu.querySelector("a").focus();
+        else toggle.focus();
+      }
+
+      document.querySelectorAll("[data-language]").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          if (event.target.closest("[contenteditable='true']") && !event.shiftKey) return;
+          setLanguage(button.dataset.language);
+        });
+      });
+
+      toggle.addEventListener("click", (event) => {
+        if (event.target.closest("[contenteditable='true']") && !event.shiftKey) return;
+        setMenuOpen(toggle.getAttribute("aria-expanded") !== "true");
+      });
+
+      menu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => setMenuOpen(false));
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") setMenuOpen(false);
+      });
+
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.14 });
+
+      document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
+      setLanguage(currentLanguage);
+    </script>
+  </body>
+</html>
