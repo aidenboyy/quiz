@@ -3,1243 +3,967 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f5f6f3">
-    <meta name="description" content="Ontdek energieopslag met een thuisbatterij.">
-    <title>Bright House Energy — Thuisbatterij</title>
+    <meta name="theme-color" content="#12163E">
+    <meta name="description" content="Maak een quiz en speel samen, gratis.">
+    <title>Zotte Familie Quizzes — speel samen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-
-      :root {
-        color-scheme: dark;
-        --ink: #f4f0e8;
-        --muted: #a09d94;
-        --paper: #11110f;
-        --line: rgba(244, 240, 232, .17);
-        --lime: #cdf467;
-        --orange: #f2764d;
-        --serif: Georgia, "Times New Roman", serif;
-        --sans: "DM Sans", sans-serif;
-        --display: "Manrope", sans-serif;
-        --mono: "DM Mono", monospace;
-      }
-
-      *, *::before, *::after { box-sizing: border-box; }
-      html { scroll-behavior: smooth; scroll-padding-top: 85px; }
-      body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
-      body.menu-open { overflow: hidden; }
-      a { color: inherit; text-decoration: none; }
-      button { color: inherit; font: inherit; }
-      ::selection { background: var(--lime); color: var(--paper); }
-
-      .topbar {
-        height: 78px; padding: 0 7.2%; display: flex; align-items: center; justify-content: space-between;
-        border-bottom: 1px solid var(--line); position: absolute; z-index: 20; inset: 0 0 auto;
-      }
-      .wordmark { display: inline-flex; align-items: center; gap: 10px; font: 700 17px var(--display); letter-spacing: -.065em; }
-      .wordmark-mark { display: grid; width: 26px; height: 26px; place-items: center; color: var(--paper); background: var(--lime); border-radius: 50%; font-size: 16px; }
-      .topbar-note { color: var(--muted); font: 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-      .topbar-actions { display: flex; align-items: center; gap: 14px; }
-      .language-switch { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
-      .language-switch button { min-width: 34px; padding: 7px 8px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; font: 9px var(--mono); letter-spacing: .05em; transition: background .2s,color .2s; }
-      .language-switch button[aria-pressed="true"] { background: var(--lime); color: var(--paper); }
-      .language-switch button:focus-visible, .menu-toggle:focus-visible, a:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
-      .menu-toggle { display: flex; align-items: center; gap: 13px; padding: 11px 0 11px 15px; border: 0; background: transparent; cursor: pointer; font: 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-      .menu-icon { width: 34px; height: 34px; display: grid; place-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 50%; transition: background .25s, border-color .25s; }
-      .menu-icon span { width: 12px; height: 1px; background: var(--ink); transition: transform .25s; }
-      .menu-toggle:hover .menu-icon { color: var(--paper); border-color: var(--lime); background: var(--lime); }
-      .menu-toggle:hover .menu-icon span { background: var(--paper); }
-      .menu-icon span { width: 15px; }
-      .menu-toggle[aria-expanded="true"] .menu-icon span:first-child { transform: translateY(6px) rotate(45deg); }
-      .menu-toggle[aria-expanded="true"] .menu-icon span:nth-child(2) { opacity: 0; }
-      .menu-toggle[aria-expanded="true"] .menu-icon span:last-child { transform: translateY(-6px) rotate(-45deg); }
-
-      .menu-panel {
-        position: fixed; z-index: 15; inset: 0; display: flex; flex-direction: column; justify-content: center;
-        padding: 100px 12%; background: var(--lime); color: var(--paper);
-        visibility: hidden; opacity: 0; clip-path: circle(0 at calc(100% - 8%) 39px);
-        transition: clip-path .7s cubic-bezier(.77,0,.18,1), opacity .4s, visibility .7s;
-      }
-      .menu-panel.is-open { visibility: visible; opacity: 1; clip-path: circle(150% at calc(100% - 8%) 39px); }
-      .menu-kicker { margin-bottom: 30px; font: 10px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
-      .menu-links { display: flex; flex-direction: column; align-items: flex-start; }
-      .menu-links a { font: 500 clamp(42px, 8vw, 100px)/1.12 var(--display); letter-spacing: -.09em; transition: opacity .2s, transform .25s; }
-      .menu-links a:hover { opacity: .55; transform: translateX(12px); }
-      .menu-bottom { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 18px; border-top: 1px solid rgba(17,17,15,.25); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
-
-      .hero { min-height: 790px; height: min(100svh, 1000px); max-height: 1040px; position: relative; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: 120px 12.5% 80px; }
-      .hero::before { content: ""; position: absolute; width: min(54vw, 690px); aspect-ratio: 1; top: 50%; left: 67%; transform: translate(-50%,-46%); border: 1px solid rgba(244,240,232,.09); border-radius: 50%; box-shadow: 0 0 0 80px rgba(244,240,232,.018), 0 0 0 160px rgba(244,240,232,.014); }
-      .hero::after { content: ""; position: absolute; width: min(38vw, 485px); aspect-ratio: 1; top: 51%; left: 67%; transform: translate(-50%,-50%); border: 1px solid rgba(244,240,232,.11); border-radius: 50%; }
-      .hero-orb { position: absolute; z-index: 1; top: 50%; left: 67%; width: min(28vw, 345px); aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle at 33% 29%, #fff8c9 0, #e5ec99 11%, #b3c95c 27%, #51633a 52%, #1a2519 73%, rgba(17,17,15,.15) 100%); box-shadow: inset -35px -27px 60px rgba(0,0,0,.34), 0 0 100px rgba(205,244,103,.11); animation: float 7s ease-in-out infinite; }
-      .hero-orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: repeating-radial-gradient(ellipse at 45% 50%, transparent 0 19px, rgba(244,240,232,.1) 20px 21px, transparent 22px 30px); opacity: .3; }
-      .hero-orb { width: min(24vw, 275px); aspect-ratio: .64; border: 1px solid rgba(244,240,232,.48); border-radius: 32px; background: linear-gradient(125deg,#555a4b 0%,#262b25 46%,#171a17 100%); box-shadow: inset -20px -15px 35px rgba(0,0,0,.4), 0 0 90px rgba(205,244,103,.14); }
-      .hero-orb::before { content: ""; position: absolute; top: -11px; left: 36%; width: 28%; height: 10px; border: 1px solid rgba(244,240,232,.4); border-bottom: 0; border-radius: 5px 5px 0 0; background: #8c907e; }
-      .hero-orb::after { inset: 19px; border: 1px solid rgba(244,240,232,.13); border-radius: 20px; background: radial-gradient(circle at 50% 23px,var(--lime) 0 4px,transparent 5px),linear-gradient(180deg,transparent 24%,rgba(244,240,232,.04) 24% 25%,transparent 25%); opacity: 1; }
-      .battery-charge { position: absolute; z-index: 2; inset: auto 29% 17%; display: flex; flex-direction: column-reverse; gap: 5px; }
-      .battery-charge span { height: 4px; border-radius: 3px; background: var(--lime); opacity: .8; animation: charge 2s ease-in-out infinite alternate; }
-      .battery-charge span:nth-child(2) { animation-delay: .3s; }
-      .battery-charge span:nth-child(3) { animation-delay: .6s; }
-      .battery-charge span:nth-child(4) { animation-delay: .9s; }
-      .hero-star { position: absolute; z-index: 2; top: 27%; left: 80%; color: var(--lime); font-size: 30px; animation: rotate 18s linear infinite; }
-      .hero-copy { position: relative; z-index: 3; }
-      .eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 32px 5px; font: 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; color: var(--lime); }
-      .eyebrow::before { content: ""; width: 24px; height: 1px; background: currentColor; }
-      h1 { max-width: 790px; margin: 0; font: 500 clamp(72px, 11.4vw, 156px)/.88 var(--display); letter-spacing: -.105em; }
-      h1 .serif { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.09em; }
-      .hero-bottom { position: absolute; z-index: 4; inset: auto 7.2% 33px; display: flex; justify-content: space-between; align-items: end; }
-      .hero-description { max-width: 235px; margin: 0; color: #c7c3ba; font-size: 13px; line-height: 1.7; }
-      .hero-description strong { color: var(--ink); font-weight: 500; }
-      .scroll-note { display: flex; gap: 12px; align-items: center; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .12em; }
-      .scroll-line { width: 43px; height: 1px; background: var(--lime); transform-origin: left; animation: line-pulse 2s ease-in-out infinite; }
-      .hero-index { color: var(--muted); font: 10px var(--mono); }
-
-      .ticker { padding: 17px 0; overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-      .ticker-track { width: max-content; display: flex; align-items: center; animation: ticker 30s linear infinite; }
-      .ticker-item { display: flex; align-items: center; gap: 25px; padding: 0 24px; font: 10px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: #d1cec4; }
-      .ticker-item span { color: var(--lime); font-size: 15px; }
-
-      .section { padding: 140px 12.5%; }
-      .section-label { color: var(--lime); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .14em; }
-      .intro { display: grid; grid-template-columns: 1fr 1.4fr; gap: 9%; align-items: start; }
-      .intro h2 { max-width: 700px; margin: -10px 0 36px; font: 500 clamp(40px, 6.2vw, 76px)/1.08 var(--display); letter-spacing: -.075em; }
-      .intro h2 em { color: var(--orange); font: italic 400 1.06em var(--serif); }
-      .intro-copy { max-width: 410px; margin-left: auto; padding-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.8; }
-      .intro-copy p { margin: 0 0 20px; }
-      .text-link { display: inline-flex; align-items: center; gap: 13px; padding: 0 0 7px; border-bottom: 1px solid var(--lime); color: var(--ink); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .1em; }
-      .text-link span { color: var(--lime); transition: transform .2s; }
-      .text-link:hover span { transform: translate(4px,-4px); }
-
-      .work { padding-top: 35px; }
-      .work-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 36px; }
-      .work-heading h2 { margin: 14px 0 0; font: 500 clamp(40px, 6vw, 72px)/1 var(--display); letter-spacing: -.075em; }
-      .work-count { color: var(--muted); font: 10px var(--mono); }
-      .project-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 76px 28px; align-items: start; }
-      .project:nth-child(even) { margin-top: 115px; }
-      .project-visual { min-height: 350px; aspect-ratio: 1.17; position: relative; overflow: hidden; display: grid; place-items: center; }
-      .project:first-child .project-visual { background: #d9b85f; }
-      .project:nth-child(2) .project-visual { background: #80956d; }
-      .project:nth-child(3) .project-visual { background: #a7c7c2; }
-      .project:nth-child(4) .project-visual { background: #d2a6a0; }
-      .project-art { width: 68%; height: 68%; display: grid; place-items: center; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
-      .project:hover .project-art { transform: scale(1.07) rotate(-2deg); }
-      .project-word { position: relative; z-index: 1; color: #f6efe1; font: 800 clamp(42px, 7vw, 92px)/.84 var(--display); letter-spacing: -.1em; text-align: center; text-shadow: 0 3px 24px rgba(0,0,0,.12); }
-      .project-one .project-art { background: #d68660; border-radius: 46% 54% 66% 34% / 43% 32% 68% 57%; transform: rotate(-12deg); }
-      .project-one .project-word { transform: rotate(12deg); font: 500 clamp(34px, 5vw, 66px) var(--serif); letter-spacing: -.07em; }
-      .project-two .project-art { position: relative; background: #234d3b; border-radius: 50%; }
-      .project-two .project-art::before, .project-two .project-art::after { content: ""; position: absolute; width: 67%; aspect-ratio: 1; border: 1px solid rgba(232,235,192,.5); border-radius: 50%; }
-      .project-two .project-art::after { width: 91%; }
-      .project-two .project-word { color: #e8ebc0; font-size: clamp(30px, 4.8vw, 60px); font-weight: 600; letter-spacing: -.11em; }
-      .project-three .project-art { background: #ec855d; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-      .project-three .project-word { padding-top: 20%; font: 500 clamp(29px, 4vw, 52px) var(--serif); letter-spacing: -.08em; }
-      .project-four .project-art { position: relative; width: 76%; height: 65%; background: #56413e; border-radius: 48% 48% 10px 10px; }
-      .project-four .project-art::before { content: ""; position: absolute; inset: 15% -8%; border: 1px solid rgba(255,231,216,.6); border-radius: 50%; transform: rotate(-27deg); }
-      .project-four .project-word { font-size: clamp(31px, 4.5vw, 58px); }
-      .project-meta { display: flex; justify-content: space-between; padding-top: 15px; font-size: 12px; }
-      .project-meta span:last-child { color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
-      .benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }
-      .benefit { min-height: 225px; padding: 28px; background: var(--paper); }
-      .benefit-icon { display: grid; width: 42px; height: 42px; place-items: center; margin-bottom: 30px; border: 1px solid var(--line); border-radius: 50%; color: var(--lime); font-size: 19px; }
-      .benefit h3 { margin: 0 0 11px; font: 500 20px var(--display); letter-spacing: -.04em; }
-      .benefit p { max-width: 300px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
-      .flow { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 30px; }
-      .flow-step { padding-top: 18px; border-top: 1px solid var(--line); }
-      .flow-number { color: var(--lime); font: 10px var(--mono); }
-      .flow-step h3 { margin: 24px 0 10px; font: 500 21px var(--display); }
-      .flow-step p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
-
-      .statement { position: relative; overflow: hidden; padding: 145px 12.5% 155px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-      .statement::after { content: "“"; position: absolute; right: 12%; top: 60px; color: rgba(205,244,103,.09); font: 400 280px/.8 var(--serif); }
-      .statement blockquote { position: relative; z-index: 1; max-width: 970px; margin: 0; font: 500 clamp(35px, 6vw, 70px)/1.17 var(--display); letter-spacing: -.07em; }
-      .statement blockquote em { color: var(--lime); font: italic 400 1.07em var(--serif); }
-      .statement cite { display: block; margin-top: 39px; color: var(--muted); font: normal 9px var(--mono); text-transform: uppercase; letter-spacing: .12em; }
-
-      .contact { padding: 145px 12.5% 95px; }
-      .contact-top { display: flex; justify-content: space-between; align-items: start; }
-      .contact h2 { max-width: 800px; margin: 24px 0 38px; font: 500 clamp(65px, 12vw, 140px)/.91 var(--display); letter-spacing: -.105em; }
-      .contact h2 span { color: var(--lime); font: italic 400 .95em var(--serif); }
-      .contact-link { display: inline-flex; align-items: center; justify-content: space-between; gap: 55px; padding: 16px 19px; border: 1px solid var(--line); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .1em; transition: background .25s,color .25s,border .25s; }
-      .contact-link:hover { border-color: var(--lime); background: var(--lime); color: var(--paper); }
-      .contact-link span { color: var(--lime); font-size: 16px; transition: color .25s,transform .25s; }
-      .contact-link:hover span { color: var(--paper); transform: translate(3px,-3px); }
-      .footer { margin-top: 140px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
-      .footer-links { display: flex; gap: 22px; }
-      .footer-links a:hover { color: var(--lime); }
-      .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s, transform .8s cubic-bezier(.2,.7,.2,1); }
-      .reveal.is-visible { opacity: 1; transform: translateY(0); }
-      .hero-copy .eyebrow, .hero-copy h1 { animation: arrive .85s both cubic-bezier(.2,.7,.2,1); }
-      .hero-copy h1 { animation-delay: .1s; }
-
-      @keyframes float { 0%,100% { translate: 0 0; } 50% { translate: 0 -17px; } }
-      @keyframes rotate { to { transform: rotate(360deg); } }
-      @keyframes ticker { to { transform: translateX(-50%); } }
-      @keyframes line-pulse { 0%,100% { transform: scaleX(.5); opacity: .5; } 50% { transform: scaleX(1); opacity: 1; } }
-      @keyframes arrive { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
-      @keyframes charge { from { opacity: .35; transform: scaleX(.55); transform-origin: left; } to { opacity: 1; transform: scaleX(1); transform-origin: left; } }
-
-      @media (max-width: 760px) {
-        .topbar { height: 68px; padding-inline: 6%; }
-        .topbar-note { display: none; }
-        .hero { min-height: 700px; height: 92svh; max-height: 900px; padding: 120px 7% 95px; }
-        .hero::before { width: 90vw; left: 71%; top: 45%; }
-        .hero::after { width: 67vw; left: 71%; top: 46%; }
-        .hero-orb { width: 42vw; left: 71%; top: 46%; }
-        .hero-star { left: 84%; top: 27%; }
-        h1 { font-size: clamp(70px, 15vw, 112px); }
-        .hero-bottom { inset-inline: 7%; bottom: 25px; align-items: end; }
-        .hero-index { display: none; }
-        .section { padding: 95px 7%; }
-        .intro { grid-template-columns: 1fr; gap: 30px; }
-        .intro-copy { margin-left: 12%; }
-        .work { padding-top: 20px; }
-        .project-grid { grid-template-columns: 1fr; gap: 43px; }
-        .project:nth-child(even) { margin-top: 0; }
-        .project-visual { min-height: 300px; }
-        .benefit-grid { grid-template-columns: 1fr; }
-        .benefit { min-height: auto; }
-        .benefit-icon { margin-bottom: 18px; }
-        .flow { grid-template-columns: 1fr; gap: 30px; }
-        .statement { padding: 100px 7% 110px; }
-        .statement::after { right: 5%; font-size: 190px; }
-        .contact { padding: 100px 7% 30px; }
-        .contact-top { display: block; }
-        .contact h2 { margin-top: 33px; }
-        .footer { margin-top: 100px; gap: 20px; flex-wrap: wrap; }
-      }
-      @media (max-width: 420px) {
-        .topbar-actions { gap: 4px; }
-        .menu-toggle { gap: 7px; padding-left: 7px; }
-        .hero-description { max-width: 195px; font-size: 12px; }
-        .scroll-note { font-size: 8px; gap: 7px; }
-        .scroll-line { width: 23px; }
-        .menu-panel { padding-inline: 8%; }
-        .menu-bottom { gap: 18px; flex-wrap: wrap; }
-        .project-visual { min-height: 260px; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-        .reveal { opacity: 1; transform: none; }
-      }
-
-      :root {
-        color-scheme: light;
-        --ink: #1e2923;
-        --muted: #657169;
-        --paper: #f5f6f3;
-        --line: #dce2dc;
-        --lime: #617a55;
-        --orange: #617a55;
-      }
-      html { scroll-padding-top: 90px; }
-      body { background: var(--paper); color: var(--ink); }
-      ::selection { background: #dfe8d7; color: var(--ink); }
-      .topbar { position: sticky; inset: auto; top: 0; height: 76px; padding-inline: 8%; background: rgba(245,246,243,.96); border-color: var(--line); backdrop-filter: blur(12px); }
-      .wordmark { gap: 9px; font-size: 16px; letter-spacing: -.035em; }
-      .wordmark-mark { width: 28px; height: 28px; border-radius: 5px; background: #294335; color: #fff; font: 600 14px var(--display); }
-      .wordmark-suffix { color: var(--muted); font-weight: 400; }
-      .topbar-note { color: var(--muted); font: 11px var(--sans); letter-spacing: .02em; text-transform: none; }
-      .topbar-actions { gap: 18px; }
-      .language-switch { gap: 0; padding: 2px; border-color: var(--line); border-radius: 6px; }
-      .language-switch button { min-width: 36px; padding: 7px 9px; border-radius: 4px; color: var(--muted); font: 10px var(--sans); }
-      .language-switch button[aria-pressed="true"] { background: #294335; color: white; }
-      .language-switch button:focus-visible, .menu-toggle:focus-visible, a:focus-visible { outline-color: #617a55; }
-      .menu-toggle { gap: 10px; padding: 7px 0 7px 7px; font: 11px var(--sans); letter-spacing: .01em; text-transform: none; }
-      .menu-icon { width: 34px; height: 34px; border-color: var(--line); border-radius: 5px; }
-      .menu-icon span { background: var(--ink); }
-      .menu-toggle:hover .menu-icon { border-color: #294335; background: #294335; }
-      .menu-panel { z-index: 25; inset: 76px 0 0; justify-content: flex-start; padding: 8vh 12%; background: #edf0eb; color: var(--ink); clip-path: none; transform: translateY(-8px); transition: opacity .25s ease, transform .25s ease, visibility .25s; }
-      .menu-panel.is-open { clip-path: none; transform: translateY(0); }
-      .menu-kicker { margin-bottom: 26px; color: var(--muted); font: 11px var(--sans); letter-spacing: .04em; text-transform: none; }
-      .menu-links a { font: 500 clamp(38px, 6vw, 68px)/1.2 var(--display); letter-spacing: -.055em; }
-      .menu-links a span:last-child { color: #617a55; font-size: .55em; }
-      .menu-bottom { max-width: 900px; margin-top: 40px; padding-top: 18px; border-color: #ced7ce; font: 11px var(--sans); letter-spacing: .02em; text-transform: none; }
-      .menu-bottom .menu-contact { display: inline-flex; align-items: center; gap: 10px; color: #294335; font-weight: 700; }
-      .menu-contact:hover, .footer-contact:hover { text-decoration: underline; text-underline-offset: 4px; }
-      .gallery-options-link { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; margin-top: 20px; padding: 0 20px; border: 1px solid #294335; border-radius: 5px; background: #294335; color: #fff; font: 600 13px var(--sans); }
-      .gallery-options-link:hover { background: #405b45; }
-      .menu-toggle { display: flex; }
-      .desktop-nav, .header-cta { display: none; }
-      .gallery-photo { min-height: 200px; }
-      .hero { display: grid; grid-template-columns: minmax(0,1.12fr) minmax(260px,.88fr); grid-template-areas: "copy visual" "bottom bottom"; align-items: center; gap: 38px 8%; min-height: 650px; height: auto; max-height: none; overflow: hidden; padding: 80px 10% 38px; background: var(--paper); }
-      .hero::before, .hero::after { display: none; }
-      .hero-copy { grid-area: copy; }
-      .eyebrow { gap: 10px; margin: 0 0 23px; color: #617a55; font: 600 11px var(--sans); letter-spacing: .015em; text-transform: none; }
-      .eyebrow::before { width: 18px; }
-      h1 { max-width: 680px; font: 500 clamp(54px,6.2vw,88px)/1.04 var(--display); letter-spacing: -.075em; }
-      h1 .serif { color: #617a55; font-family: var(--display); font-style: normal; font-weight: 500; letter-spacing: inherit; }
-      .hero-orb { grid-area: visual; position: relative; top: auto; left: auto; width: min(100%,300px); height: 390px; aspect-ratio: auto; justify-self: center; margin: 0; transform: none; border: 1px solid #d7ded7; border-radius: 14px; background: linear-gradient(135deg,#fff 0%,#f9faf7 56%,#e7ece6 100%); box-shadow: 0 22px 50px rgba(28,47,34,.09); animation: none; }
-      .hero-orb::before { display: none; }
-      .hero-orb::after { inset: 12px; border: 1px solid #e7ebe6; border-radius: 9px; background: linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0)); opacity: 1; }
-      .battery-brand, .battery-capacity { position: absolute; z-index: 2; left: 23px; color: #68736a; font: 600 9px var(--sans); letter-spacing: .08em; }
-      .battery-brand { top: 24px; }
-      .battery-status { position: absolute; z-index: 2; top: 24px; right: 23px; width: 8px; height: 8px; border-radius: 50%; background: #6d8a5e; }
-      .battery-flow-label { position: absolute; z-index: 2; top: 29%; left: 0; width: 100%; color: #68736a; font: 600 9px var(--sans); letter-spacing: .08em; text-align: center; }
-      .battery-flow-evening { top: 68%; }
-      .battery-charge { inset: 40% 25% auto; gap: 8px; }
-      .battery-charge span { height: 10px; border: 1px solid #d4ded0; border-radius: 3px; background: #79936b; opacity: .8; animation: none; }
-      .battery-capacity { top: auto; bottom: 23px; }
-      .hero-star { display: none; }
-      .hero-bottom { grid-area: bottom; position: relative; inset: auto; display: flex; align-items: center; gap: 24px; margin: 16px 0 0; padding-top: 22px; border-top: 1px solid var(--line); }
-      .hero-description { max-width: 465px; color: var(--muted); font-size: 14px; line-height: 1.7; }
-      .scroll-note { gap: 9px; color: #294335; font: 500 12px var(--sans); letter-spacing: 0; text-transform: none; }
-      .scroll-line { display: none; }
-      .section { padding: 100px 10%; }
-      .section-label { color: #617a55; font: 600 11px var(--sans); letter-spacing: .025em; text-transform: none; }
-      .intro { grid-template-columns: minmax(170px,.7fr) minmax(0,1.5fr); gap: 8%; }
-      .intro h2 { max-width: 670px; margin: 0 0 28px; font: 500 clamp(38px,5vw,62px)/1.12 var(--display); letter-spacing: -.065em; }
-      .intro h2 em { color: #617a55; font: inherit; }
-      .intro-copy { max-width: 510px; padding-top: 0; color: var(--muted); font-size: 15px; line-height: 1.75; }
-      .text-link { gap: 9px; padding-bottom: 5px; border-color: #617a55; color: #294335; font: 600 12px var(--sans); letter-spacing: 0; text-transform: none; }
-      .text-link span { color: #617a55; }
-      .work { padding-top: 42px; }
-      .work-heading { margin-bottom: 30px; }
-      .work-heading h2 { max-width: 720px; margin-top: 13px; font: 500 clamp(36px,4.6vw,58px)/1.1 var(--display); letter-spacing: -.06em; }
-      .benefit-grid { gap: 0; border: 1px solid var(--line); background: transparent; }
-      .benefit { min-height: 235px; padding: 27px; background: transparent; }
-      .benefit + .benefit { border-left: 1px solid var(--line); }
-      .benefit-icon { width: 34px; height: 34px; margin-bottom: 26px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: #617a55; font: 600 10px var(--sans); }
-      .benefit h3 { margin-bottom: 10px; font: 600 18px/1.35 var(--sans); letter-spacing: -.025em; }
-      .benefit p, .flow-step p { color: var(--muted); font-size: 14px; line-height: 1.7; }
-      .flow { gap: 28px; margin-top: 12px; }
-      .flow-step { padding-top: 18px; border-color: #cbd4cb; }
-      .flow-number { color: #617a55; font: 600 10px var(--sans); letter-spacing: .06em; }
-      .flow-step h3 { margin: 20px 0 9px; font: 600 18px/1.35 var(--sans); letter-spacing: -.02em; }
-      .assessment { display: grid; grid-template-columns: 1fr 1fr; gap: 8%; align-items: end; padding: 72px 10%; background: #e9eee8; }
-      .assessment h2 { max-width: 500px; margin: 16px 0 0; font: 500 clamp(34px,4.3vw,54px)/1.1 var(--display); letter-spacing: -.06em; }
-      .assessment p { max-width: 520px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.8; }
-      .contact { padding: 110px 10% 30px; }
-      .contact h2 { max-width: 740px; margin: 23px 0 32px; font: 500 clamp(58px,8vw,100px)/1 var(--display); letter-spacing: -.08em; }
-      .contact h2 span { color: #617a55; font: inherit; }
-      .contact-link { min-height: 52px; gap: 32px; padding: 14px 17px; border: 1px solid #294335; border-radius: 5px; background: #294335; color: #fff; font: 600 13px var(--sans); letter-spacing: 0; text-transform: none; }
-      .contact-link:hover { border-color: #405b45; background: #405b45; color: #fff; }
-      .contact-link span { color: #fff; }
-      .contact-top > .section-label { color: var(--muted); font: 13px/1.6 var(--sans); }
-      .footer { min-height: 72px; margin-top: 95px; padding-top: 18px; border-color: var(--line); color: var(--muted); font: 11px var(--sans); letter-spacing: 0; text-transform: none; }
-      .footer-links a:hover { color: #294335; }
-      .reveal { transform: translateY(12px); transition-duration: .45s; }
-      .hero-copy .eyebrow, .hero-copy h1 { animation: none; }
-      @media (min-width: 761px) {
-        .hero {
-          width: min(100%, 1600px);
-          min-height: clamp(650px, calc(100svh - 76px), 850px);
-          margin-inline: auto;
-          padding: clamp(70px, 8vh, 110px) clamp(72px, 10vw, 160px) 42px;
-          column-gap: clamp(60px, 9vw, 150px);
-        }
-        .hero-copy { max-width: 700px; }
-        h1 { font-size: clamp(72px, 7.2vw, 104px); }
-        .hero-orb { width: clamp(290px, 25vw, 360px); height: clamp(390px, 34vw, 460px); }
-        .hero-bottom { width: 100%; max-width: 1280px; justify-self: center; }
-        .section, .contact { padding-right: clamp(72px, 10vw, 160px); padding-left: clamp(72px, 10vw, 160px); }
-        .section { max-width: 1600px; margin-inline: auto; }
-        .assessment { padding-right: max(clamp(72px, 10vw, 160px), calc((100% - 1280px) / 2)); padding-left: max(clamp(72px, 10vw, 160px), calc((100% - 1280px) / 2)); }
-        .benefit { min-height: 250px; padding: 32px; }
-      }
-      .topbar { height: 82px; padding-inline: max(5%, calc((100% - 1400px) / 2)); }
-      .desktop-nav { display: flex; align-items: center; gap: clamp(24px, 3vw, 46px); margin-left: auto; margin-right: 34px; }
-      .desktop-nav a { color: #35463b; font: 500 13px var(--sans); transition: color .18s; }
-      .desktop-nav a:hover { color: #7c955d; }
-      .topbar-actions { gap: 14px; }
-      .header-cta, .hero-cta { display: inline-flex; align-items: center; justify-content: center; gap: 18px; min-height: 44px; padding: 0 18px; border-radius: 4px; background: #087c59; color: white; font: 600 13px var(--sans); transition: background .2s,transform .2s; }
-      .header-cta:hover, .hero-cta:hover { transform: translateY(-1px); background: #066849; }
-      .menu-toggle { display: flex; }
-      .breadcrumbs { display: flex; align-items: center; gap: 11px; width: min(100% - 64px, 1400px); margin: 0 auto; padding: 17px 0 19px; color: #626e65; font: 12px var(--sans); }
-      .breadcrumbs a { color: #34483a; }
-      .breadcrumbs > span:nth-child(2) { color: #a5ada6; }
-      .hero { display: block; width: min(100% - 48px, 1440px); min-height: 0; height: auto; margin: 0 auto; padding: 0; overflow: visible; background: transparent; }
-      .hero-scene { position: relative; min-height: 580px; overflow: hidden; border-radius: 18px; background: #dbe5dc; }
-      .home-illustration { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-      .hero-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; width: min(430px, 42%); min-height: 430px; margin: 45px 0 0 48px; padding: 36px; border-radius: 12px; background: rgba(255,255,255,.96); box-shadow: 0 14px 44px rgba(37,54,42,.13); }
-      .hero-copy .eyebrow { margin: 0 0 20px; }
-      .hero-copy h1 { font-size: clamp(48px,5vw,68px); line-height: 1.01; }
-      .hero-copy .hero-description { max-width: 320px; margin: 20px 0 25px; color: var(--muted); font-size: 15px; line-height: 1.65; }
-      .hero-cta { min-height: 48px; }
-      .hero-facts { display: flex; align-items: center; gap: 42px; min-height: 82px; padding: 0 28px; border-bottom: 1px solid var(--line); }
-      .hero-facts > span { display: flex; align-items: center; gap: 11px; color: #34483a; font: 500 13px var(--sans); }
-      .hero-facts i { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid #dce2dc; border-radius: 50%; color: #617a55; font: normal 10px var(--sans); }
-      .hero-facts > a { display: flex; align-items: center; gap: 9px; margin-left: auto; color: #34483a; font: 600 12px var(--sans); }
-      .assessment { scroll-margin-top: 100px; }
-      .topbar { position: absolute; inset: 0 0 auto; height: 82px; padding-inline: max(5%, calc((100% - 1400px) / 2)); background: rgba(25,38,31,.28); border-color: rgba(255,255,255,.18); }
-      .topbar .wordmark, .topbar .menu-toggle { color: #fff; }
-      .topbar .wordmark-mark { background: #fff; color: #294335; }
-      .topbar .wordmark-suffix { color: rgba(255,255,255,.75); }
-      .topbar .language-switch { border-color: rgba(255,255,255,.35); }
-      .topbar .language-switch button { color: rgba(255,255,255,.84); }
-      .topbar .language-switch button[aria-pressed="true"] { background: #fff; color: #294335; }
-      .desktop-nav, .header-cta { display: none; }
-      .topbar-actions { margin-left: auto; }
-      .breadcrumbs { display: none; }
-      .hero { display: block; width: 100%; min-height: 0; height: auto; margin: 0; padding: 0; overflow: visible; background: transparent; }
-      .hero-scene { position: relative; min-height: clamp(580px, 66vw, 760px); overflow: hidden; border-radius: 0; background: #eef1ed; }
-      .hero-scene::after { display: none; }
-      .home-illustration { position: absolute; inset: 0; width: 100%; height: 100%; }
-      .photo-placeholder { border: 2px dashed #bdc8be; background: rgba(255,255,255,.24); }
-      .hero-copy { position: absolute; z-index: 1; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; width: min(850px, 88%); min-height: 0; margin: 0 auto; padding: 82px 0 76px; color: var(--ink); text-align: center; }
-      .hero-copy .eyebrow { justify-content: center; margin: 0 0 22px; color: #617a55; }
-      .hero-copy .eyebrow::before { display: none; }
-      .hero-copy h1 { max-width: 850px; font-size: clamp(62px,8vw,112px); line-height: .99; letter-spacing: -.075em; }
-      .hero-copy h1 .serif { color: #617a55; }
-      .hero-copy .hero-description { max-width: 540px; margin: 22px 0 27px; color: var(--muted); font-size: 17px; line-height: 1.65; }
-      .hero-cta { min-height: 50px; padding-inline: 21px; }
-      .hero-facts { position: absolute; z-index: 1; inset: auto 0 0; display: flex; align-items: center; justify-content: center; gap: 50px; min-height: 72px; padding: 0 24px; border-top: 1px solid var(--line); color: var(--ink); }
-      .hero-facts > span { display: flex; align-items: center; gap: 10px; color: var(--ink); font: 500 13px var(--sans); }
-      .hero-facts i { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid #bdc8be; border-radius: 50%; color: var(--ink); font: normal 10px var(--sans); }
-      .hero-facts > a { color: var(--ink); }
-      .intro { grid-template-columns: minmax(0,1fr) minmax(320px,.9fr); gap: clamp(48px,8vw,120px); align-items: center; }
-      .intro-story { max-width: 620px; }
-      .intro h2 { margin-top: 18px; }
-      .featured-battery { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 16px 40px rgba(28,47,34,.07); }
-      .featured-battery-art { position: relative; display: grid; min-height: 260px; place-items: center; overflow: hidden; background: #eef1ed; }
-      .featured-battery-art.photo-placeholder { border-width: 0 0 2px; }
-      .featured-battery-art::before { display: none; }
-      .featured-device { position: relative; width: 142px; height: 196px; border: 1px solid rgba(255,255,255,.55); border-radius: 14px; background: linear-gradient(135deg,#58715c,#2c4636); box-shadow: 0 19px 36px rgba(35,58,42,.2); }
-      .featured-device::before { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 9px; }
-      .featured-device::after { content: ""; position: absolute; left: 50%; top: 47%; width: 38px; height: 54px; transform: translate(-50%,-50%); border-radius: 5px; background: repeating-linear-gradient(to bottom,#c6d7b9 0 4px,transparent 4px 13px); }
-      .featured-device-status { position: absolute; top: 23px; right: 24px; width: 7px; height: 7px; border-radius: 50%; background: #d8e7b2; }
-      .featured-battery-body { padding: 24px 27px 26px; }
-      .featured-battery-meta { display: flex; justify-content: space-between; color: #718075; font: 11px var(--sans); }
-      .featured-battery-body h3 { margin: 14px 0 8px; font: 600 21px var(--sans); letter-spacing: -.03em; }
-      .featured-battery-body p { margin: 0 0 17px; color: var(--muted); font-size: 14px; line-height: 1.65; }
-      .featured-battery-body a { display: inline-flex; align-items: center; gap: 8px; color: #294335; font: 600 13px var(--sans); }
-      .featured-battery-body a span { color: #087c59; }
-      .work-heading { align-items: end; gap: 32px; }
-      .work-heading h2 { margin-top: 14px; }
-      .work-heading > p { max-width: 340px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
-      .benefit-grid { gap: 20px; border: 0; background: transparent; }
-      .benefit { min-height: 250px; padding: 26px; border: 1px solid var(--line); border-radius: 9px; background: #fff; transition: transform .2s,box-shadow .2s; }
-      .benefit:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(35,58,42,.08); }
-      .benefit + .benefit { border-left: 1px solid var(--line); }
-      .benefit-icon { width: 40px; height: 40px; margin-bottom: 26px; border: 1px solid var(--line); border-radius: 50%; background: #eef2ed; color: #294335; font: 600 12px var(--sans); }
-      .section-heading-copy { max-width: 700px; }
-      @media (min-width: 761px) {
-        .hero-scene { min-height: clamp(620px, 70vh, 790px); }
-        .hero-copy { padding-top: 100px; }
-        .section, .contact { padding-right: clamp(72px, 10vw, 160px); padding-left: clamp(72px, 10vw, 160px); }
-        .section { max-width: 1600px; margin-inline: auto; }
-        .benefit { min-height: 270px; padding: 32px; }
-      }
-      @media (max-width: 760px) {
-        .topbar { position: sticky; height: 68px; padding-inline: 6%; background: rgba(245,246,243,.96); border-color: var(--line); }
-        .topbar .wordmark, .topbar .menu-toggle { color: var(--ink); }
-        .topbar .wordmark-mark { background: #294335; color: #fff; }
-        .topbar .wordmark-suffix { color: var(--muted); }
-        .topbar .language-switch { border-color: var(--line); }
-        .topbar .language-switch button { color: var(--muted); }
-        .topbar .language-switch button[aria-pressed="true"] { background: #294335; color: #fff; }
-        .desktop-nav, .header-cta { display: none; }
-        .menu-toggle { display: flex; }
-        .menu-panel { inset-block-start: 68px; }
-        .hero-scene { min-height: 560px; }
-        .home-illustration { object-position: 53% center; }
-        .hero-copy { width: min(560px, 90%); padding: 90px 16px 96px; }
-        .hero-copy h1 { font-size: clamp(46px,9vw,68px); }
-        .hero-copy .hero-description { font-size: 15px; }
-        .hero-facts { flex-wrap: wrap; justify-content: flex-start; gap: 12px 25px; min-height: 82px; padding: 14px 18px; }
-        .hero-facts > span { font-size: 12px; }
-        .hero-facts > a { margin-left: auto; }
-        .intro { grid-template-columns: 1fr; gap: 32px; }
-        .intro-story { max-width: 620px; }
-        .featured-battery { max-width: 560px; }
-        .work-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
-      }
-      @media (max-width: 420px) {
-        .wordmark-suffix { display: none; }
-        .hero-scene { min-height: 560px; }
-        .hero-copy { padding-inline: 20px; }
-        .hero-copy h1 { font-size: 43px; }
-        .hero-facts { align-items: flex-start; flex-direction: column; gap: 10px; padding-block: 13px; }
-        .hero-facts > a { margin-left: 0; }
-      }
-      @media (max-width: 760px) {
-        .topbar { height: 68px; padding-inline: 6%; }
-        .topbar-note { display: none; }
-        .desktop-nav, .header-cta { display: none; }
-        .menu-toggle { display: flex; }
-        .menu-panel { inset-block-start: 68px; padding: 8vh 7%; }
-        .breadcrumbs { width: auto; margin: 0 7%; padding-block: 14px; }
-        .hero { width: auto; margin: 0 16px; padding: 0; }
-        .hero-scene { min-height: 540px; border-radius: 14px; }
-        .home-illustration { width: 100%; height: 100%; object-fit: cover; object-position: 60% center; }
-        .hero-copy { width: min(440px, 74%); min-height: 0; margin: 30px 0 0 24px; padding: 27px; }
-        .hero-copy h1 { font-size: clamp(44px,8vw,64px); }
-        .hero-facts { flex-wrap: wrap; gap: 14px 24px; padding: 17px 5px; }
-        .hero-facts > a { margin-left: auto; }
-        .section { padding: 78px 7%; }
-        .intro { grid-template-columns: 1fr; gap: 25px; }
-        .intro-copy { max-width: 580px; margin-left: 0; }
-        .work { padding-top: 28px; }
-        .benefit-grid { grid-template-columns: 1fr; }
-        .benefit { min-height: 0; padding: 23px; }
-        .benefit + .benefit { border-top: 1px solid var(--line); border-left: 0; }
-        .benefit-icon { margin-bottom: 17px; }
-        .flow { grid-template-columns: 1fr; gap: 26px; }
-        .flow-step { padding-top: 15px; }
-        .flow-step h3 { margin-top: 13px; }
-        .assessment { grid-template-columns: 1fr; gap: 24px; padding: 62px 7%; }
-        .contact { padding: 78px 7% 28px; }
-        .contact-top { display: block; }
-        .contact-top > .section-label { display: block; margin-top: 32px; }
-        .footer { margin-top: 76px; gap: 18px; flex-wrap: wrap; }
-      }
-      @media (max-width: 420px) {
-        .topbar-actions { gap: 4px; }
-        .menu-toggle { gap: 7px; padding-left: 7px; }
-        .wordmark-suffix { display: none; }
-        .hero-scene { min-height: 560px; }
-        .home-illustration { object-position: 60% center; }
-        .hero-copy { width: calc(100% - 32px); margin: 20px 16px 0; padding: 23px; }
-        .hero-copy h1 { font-size: 43px; }
-        .hero-facts { align-items: flex-start; flex-direction: column; gap: 13px; }
-        .hero-facts > a { margin-left: 0; }
-        .menu-bottom { gap: 18px; flex-wrap: wrap; }
-      }
-      .topbar { position: absolute; inset: 0 0 auto; height: 82px; padding-inline: max(5%, calc((100% - 1400px) / 2)); background: rgba(25,38,31,.28); border-color: rgba(255,255,255,.18); }
-      .topbar .wordmark, .topbar .desktop-nav a, .topbar .menu-toggle { color: #fff; }
-      .topbar .wordmark-mark { background: #fff; color: #294335; }
-      .topbar .wordmark-suffix { color: rgba(255,255,255,.75); }
-      .topbar .language-switch { border-color: rgba(255,255,255,.35); }
-      .topbar .language-switch button { color: rgba(255,255,255,.84); }
-      .topbar .language-switch button[aria-pressed="true"] { background: #fff; color: #294335; }
-      .desktop-nav { display: flex; align-items: center; gap: clamp(24px, 3vw, 46px); margin-left: auto; margin-right: 34px; }
-      .desktop-nav a { color: #fff; font: 500 13px var(--sans); transition: color .18s; }
-      .desktop-nav a:hover { color: #d5e4d5; }
-      .menu-toggle { display: none; }
-      .breadcrumbs { display: none; }
-      .hero { display: block; width: 100%; min-height: 0; height: auto; margin: 0; padding: 0; overflow: visible; background: transparent; }
-      .hero-scene { position: relative; min-height: clamp(580px, 66vw, 760px); overflow: hidden; border-radius: 0; background: #43584b; }
-      .hero-scene::after { content: ""; position: absolute; z-index: 0; inset: 0; background: linear-gradient(90deg,rgba(15,29,23,.48),rgba(15,29,23,.08) 70%),linear-gradient(0deg,rgba(15,29,23,.35),transparent 38%); }
-      .home-illustration { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 63%; }
-      .hero-copy { position: absolute; z-index: 1; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; width: min(850px, 88%); min-height: 0; margin: 0 auto; padding: 82px 0 76px; color: #fff; text-align: center; }
-      .hero-copy .eyebrow { justify-content: center; margin: 0 0 22px; color: #e1eadb; }
-      .hero-copy .eyebrow::before { display: none; }
-      .hero-copy h1 { max-width: 850px; font-size: clamp(62px,8vw,112px); line-height: .99; letter-spacing: -.075em; }
-      .hero-copy h1 .serif { color: #e3eddc; }
-      .hero-copy .hero-description { max-width: 540px; margin: 22px 0 27px; color: rgba(255,255,255,.92); font-size: 17px; line-height: 1.65; }
-      .hero-cta { min-height: 50px; padding-inline: 21px; }
-      .hero-facts { position: absolute; z-index: 1; inset: auto 0 0; display: flex; align-items: center; justify-content: center; gap: 50px; min-height: 72px; padding: 0 24px; border-top: 1px solid rgba(255,255,255,.3); color: white; }
-      .hero-facts > span { display: flex; align-items: center; gap: 10px; color: white; font: 500 13px var(--sans); }
-      .hero-facts i { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid rgba(255,255,255,.5); border-radius: 50%; color: white; font: normal 10px var(--sans); }
-      .hero-facts > a { color: white; }
-      .intro { grid-template-columns: minmax(0,1fr) minmax(320px,.9fr); gap: clamp(48px,8vw,120px); align-items: center; }
-      .intro-story { max-width: 620px; }
-      .intro h2 { margin-top: 18px; }
-      .featured-battery { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 16px 40px rgba(28,47,34,.07); }
-      .featured-battery-art { position: relative; display: grid; min-height: 260px; place-items: center; overflow: hidden; background: linear-gradient(145deg,#e9eee7,#d6e0d5); }
-      .featured-battery-art::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(67,95,73,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(67,95,73,.08) 1px,transparent 1px); background-size: 36px 36px; mask-image: linear-gradient(90deg,transparent,#000); }
-      .featured-device { position: relative; width: 142px; height: 196px; border: 1px solid rgba(255,255,255,.55); border-radius: 14px; background: linear-gradient(135deg,#58715c,#2c4636); box-shadow: 0 19px 36px rgba(35,58,42,.2); }
-      .featured-device::before { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(255,255,255,.22); border-radius: 9px; }
-      .featured-device::after { content: ""; position: absolute; left: 50%; top: 47%; width: 38px; height: 54px; transform: translate(-50%,-50%); border-radius: 5px; background: repeating-linear-gradient(to bottom,#c6d7b9 0 4px,transparent 4px 13px); }
-      .featured-device-status { position: absolute; top: 23px; right: 24px; width: 7px; height: 7px; border-radius: 50%; background: #d8e7b2; }
-      .featured-battery-body { padding: 24px 27px 26px; }
-      .featured-battery-meta { display: flex; justify-content: space-between; color: #718075; font: 11px var(--sans); }
-      .featured-battery-body h3 { margin: 14px 0 8px; font: 600 21px var(--sans); letter-spacing: -.03em; }
-      .featured-battery-body p { margin: 0 0 17px; color: var(--muted); font-size: 14px; line-height: 1.65; }
-      .featured-battery-body a { display: inline-flex; align-items: center; gap: 8px; color: #294335; font: 600 13px var(--sans); }
-      .featured-battery-body a span { color: #087c59; }
-      .work-heading { align-items: end; gap: 32px; }
-      .work-heading h2 { margin-top: 14px; }
-      .work-heading > p { max-width: 340px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
-      .benefit-grid { gap: 20px; border: 0; background: transparent; }
-      .benefit { min-height: 250px; padding: 26px; border: 1px solid var(--line); border-radius: 9px; background: #fff; transition: transform .2s,box-shadow .2s; }
-      .benefit:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(35,58,42,.08); }
-      .benefit + .benefit { border-left: 1px solid var(--line); }
-      .benefit-icon { width: 40px; height: 40px; margin-bottom: 26px; border: 1px solid var(--line); border-radius: 50%; background: #eef2ed; color: #294335; font: 600 12px var(--sans); }
-      .section-heading-copy { max-width: 700px; }
-      @media (min-width: 761px) {
-        .hero-scene { min-height: clamp(620px, 70vh, 790px); }
-        .hero-copy { padding-top: 100px; }
-        .section, .contact { padding-right: clamp(72px, 10vw, 160px); padding-left: clamp(72px, 10vw, 160px); }
-        .section { max-width: 1600px; margin-inline: auto; }
-        .benefit { min-height: 270px; padding: 32px; }
-      }
-      @media (max-width: 760px) {
-        .topbar { position: sticky; height: 68px; padding-inline: 6%; background: rgba(245,246,243,.96); border-color: var(--line); }
-        .topbar .wordmark, .topbar .menu-toggle { color: var(--ink); }
-        .topbar .wordmark-mark { background: #294335; color: #fff; }
-        .topbar .wordmark-suffix { color: var(--muted); }
-        .topbar .language-switch { border-color: var(--line); }
-        .topbar .language-switch button { color: var(--muted); }
-        .topbar .language-switch button[aria-pressed="true"] { background: #294335; color: #fff; }
-        .desktop-nav, .header-cta { display: none; }
-        .menu-toggle { display: flex; }
-        .menu-panel { inset-block-start: 68px; }
-        .hero-scene { min-height: 560px; }
-        .home-illustration { object-position: 53% center; }
-        .hero-copy { width: min(560px, 90%); padding: 90px 16px 96px; }
-        .hero-copy h1 { font-size: clamp(46px,9vw,68px); }
-        .hero-copy .hero-description { font-size: 15px; }
-        .hero-facts { flex-wrap: wrap; justify-content: flex-start; gap: 12px 25px; min-height: 82px; padding: 14px 18px; }
-        .hero-facts > span { font-size: 12px; }
-        .hero-facts > a { margin-left: auto; }
-        .intro { grid-template-columns: 1fr; gap: 32px; }
-        .intro-story { max-width: 620px; }
-        .featured-battery { max-width: 560px; }
-        .work-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
-      }
-      @media (max-width: 420px) {
-        .wordmark-suffix { display: none; }
-        .hero-scene { min-height: 560px; }
-        .hero-copy { padding-inline: 20px; }
-        .hero-copy h1 { font-size: 43px; }
-        .hero-facts { align-items: flex-start; flex-direction: column; gap: 10px; padding-block: 13px; }
-        .hero-facts > a { margin-left: 0; }
-      }
-      .hero-scene > .hero-copy { position: absolute; inset: 0; width: min(850px,88%); max-width: none; height: 100%; min-height: 0; margin: 0 auto; padding: 82px 0 76px; border-radius: 0; background: transparent; box-shadow: none; }
-      .hero-editable { outline: none; }
-      .hero-editable:empty::before { content: attr(data-placeholder); color: rgba(255,255,255,.76); font: inherit; letter-spacing: normal; }
-      .hero-editable:focus-visible { outline: 2px dashed rgba(255,255,255,.85); outline-offset: 8px; }
-      .hero-copy h1.hero-editable { min-height: 1em; }
-      .hero-copy h1.hero-editable:empty::before { display: block; max-width: 620px; font: 500 clamp(24px,3vw,36px)/1.2 var(--sans); letter-spacing: 0; }
-      .hero-description.hero-editable { min-height: 1.65em; }
-      .hero-cta .hero-editable { min-width: 120px; min-height: 1.4em; }
-      .hero-cta .hero-editable:empty::before { color: rgba(255,255,255,.8); font: 12px var(--sans); }
-      .hero-scene { background: #eef1ed; }
-      .hero-scene::after { display: none; }
-      .hero-scene > .hero-copy { color: var(--ink); }
-      .hero-scene > .hero-copy .eyebrow { color: #617a55; }
-      .hero-scene > .hero-copy .hero-description { color: var(--muted); }
-      .home-illustration { object-fit: unset; }
-      .featured-battery-art { background: #eef1ed; }
-      .featured-battery-art::before { display: none; }
-      [data-editable-text] { cursor: text; white-space: pre-wrap; }
-      [data-editable-text]:hover { outline: 1px dashed rgba(41,67,53,.5); outline-offset: 2px; }
-      [data-editable-text]:focus-visible { outline: 2px dashed #617a55; outline-offset: 3px; }
-      .language-switch button { min-width: 36px; }
-      .photo-carousel { margin-top: 42px; }
-      .photo-gallery-page { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
-      .gallery-photo { min-height: 220px; border-radius: 8px; }
-      @media (max-width: 760px) {
-        .language-switch button { min-width: 30px; padding-inline: 5px; }
-        .photo-gallery-page { grid-template-columns: 1fr; gap: 12px; }
-        .gallery-photo { min-height: 170px; }
-      }
-      .menu-toggle { display: flex; }
-      .topbar { background: rgba(245,246,243,.96); border-color: var(--line); backdrop-filter: blur(12px); }
-      .topbar .wordmark, .topbar .menu-toggle { color: var(--ink); }
-      .topbar .wordmark-mark { background: #294335; color: #fff; }
-      .topbar .wordmark-suffix { color: var(--muted); }
-      .topbar .language-switch { border-color: var(--line); }
-      .topbar .language-switch button { color: var(--muted); }
-      .topbar .language-switch button[aria-pressed="true"] { background: #294335; color: #fff; }
-      .hero-copy > .hero-editable:empty::before { color: var(--muted); }
-      .topbar { padding-inline: 0; }
-      .topbar-actions { gap: 14px; margin-left: auto; }
-      .menu-toggle { padding-right: 0; }
-      .topbar .wordmark-mark { margin-left: 10px; }
-      @media (min-width: 761px) {
-        .work-heading h2[data-i18n="whyTitle"] { max-width: none; font-size: clamp(24px,3.5vw,48px); white-space: nowrap; }
-      }
+      :root { color-scheme:dark; --paper:#12163E; --ink:#fff; --muted:#c5cbe0; --line:rgba(255,255,255,.18); --green:#26890C; --lime:#D89E00; --orange:#E21B3C; --blue:#1368CE; --red:#E21B3C; --white:#fff; --panel:#1d2352; --display:"Space Grotesk",sans-serif; --sans:"DM Sans",sans-serif; --mono:"DM Mono",monospace; }
+      * { box-sizing:border-box; }
+      body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+      button,input,textarea { color:inherit; font:inherit; }
+      button { cursor:pointer; }
+      button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible { outline:3px solid var(--lime); outline-offset:3px; }
+      [hidden] { display:none !important; }
+      .topbar { height:66px; display:flex; align-items:center; justify-content:space-between; padding:0 max(5%,calc((100% - 1180px)/2)); border-bottom:1px solid var(--line); background:#101433; }
+      .brand { display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; font:700 19px var(--display); letter-spacing:-.04em; }
+      .brand-mark { width:32px; height:32px; display:grid; place-items:center; border-radius:9px; background:var(--red); color:white; font-size:17px; transform:rotate(-5deg); }
+      main { width:min(1120px,90%); margin:0 auto; padding:62px 0 90px; }
+      .intro { display:grid; grid-template-columns:1fr .9fr; align-items:center; gap:42px; margin-bottom:32px; }
+      .kicker { margin:0 0 13px; color:var(--lime); font:10px var(--mono); letter-spacing:.1em; text-transform:uppercase; }
+      h1,h2,h3,p { margin-top:0; }
+      h1 { max-width:650px; margin-bottom:12px; font:600 clamp(42px,7vw,76px)/.98 var(--display); letter-spacing:-.065em; }
+      h1 span { color:var(--lime); }
+      .home-actions { display:grid; grid-template-columns:minmax(0,420px) auto; justify-content:start; align-items:start; gap:12px; margin:26px 0 34px; padding:18px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+      .home-action { width:max-content; min-width:160px; min-height:44px; justify-self:start; align-self:start; margin-top:22px; display:inline-flex; align-items:center; justify-content:center; gap:9px; padding:0 16px; border:0; background:var(--red); color:white; font-size:13px; font-weight:700; white-space:nowrap; }
+      .home-action:hover { background:#c61634; }
+      .home-action strong { font:700 13px var(--sans); }
+      .home-action-icon { color:white; font-size:18px; }
+      .my-quizzes { margin:0 0 28px; }
+      .quiz-list-heading { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:13px; }
+      .quiz-list-heading .kicker { display:none; }
+      .quiz-list-heading h2 { margin:0; font:600 16px var(--sans); }
+      .quiz-list { border-top:1px solid var(--line); }
+      .quiz-list-item { border-bottom:1px solid var(--line); }
+      .quiz-open { width:100%; min-height:60px; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:11px 8px; border:0; background:transparent; color:white; text-align:left; }
+      .quiz-open:hover { padding-inline:14px; background:rgba(255,255,255,.045); }
+      .quiz-open strong { display:block; margin-bottom:4px; font:600 14px var(--sans); }
+      .quiz-open small { color:var(--muted); font:11px var(--sans); }
+      .quiz-open-icon { color:var(--muted); font-size:17px; }
+      .empty-quiz-list { padding:18px 0; color:var(--muted); font-size:13px; }
+      .game-preview { min-height:270px; display:flex; flex-direction:column; justify-content:space-between; gap:17px; padding:21px; border:3px solid #fff; background:#fff; color:#12163E; box-shadow:9px 9px 0 var(--red); transform:rotate(1deg); }
+      .preview-topline,.preview-players { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+      .preview-topline { color:#12163E; font:10px var(--mono); letter-spacing:.06em; text-transform:uppercase; }
+      .preview-players { justify-content:flex-start; color:#4d5576; font-size:12px; }
+      .preview-avatars { display:flex; align-items:center; }
+      .preview-avatars span { width:31px; height:31px; display:grid; place-items:center; margin-right:-5px; border:2px solid #fff; border-radius:50%; background:#eceef7; font-size:16px; }
+      .preview-question { margin:0; font:600 19px/1.2 var(--display); }
+      .preview-answers { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+      .preview-answers span { min-height:38px; display:grid; place-items:center; color:#fff; font:700 12px var(--mono); }
+      .preview-answers span:nth-child(1) { background:var(--red); }
+      .preview-answers span:nth-child(2) { background:var(--blue); }
+      .preview-answers span:nth-child(3) { background:var(--lime); color:#12163E; }
+      .preview-answers span:nth-child(4) { background:var(--green); }
+      .intro-copy { max-width:470px; margin:0; color:var(--muted); font-size:15px; line-height:1.65; }
+      .join-box { min-width:0; display:grid; grid-template-columns:minmax(0,1fr); align-items:stretch; gap:8px; padding:0; background:transparent; }
+      .join-box label,.field-label { display:block; margin:0; font:11px var(--sans); }
+      .join-row { display:flex; max-width:420px; gap:0; }
+      .join-row input { min-width:0; width:100%; min-height:44px; padding:11px 12px; border:1px solid #d6daea; background:white; color:#12163E; font:12px var(--mono); }
+      .join-row button { width:44px; flex:none; border:0; background:var(--blue); color:white; font-size:18px; }
+      .join-hint { grid-column:1; margin:0; color:var(--muted); font-size:11px; }
+      .editor { display:grid; grid-template-columns:minmax(0,1fr) 300px; align-items:start; gap:22px; }
+      .questions-column { min-width:0; }
+      .editor-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+      .editor-heading h2 { margin:0; font:600 19px var(--display); letter-spacing:-.04em; }
+      .question-count { color:var(--muted); font:10px var(--mono); }
+      .question-card { position:relative; margin-bottom:13px; padding:18px 19px 19px; border:1px solid #d6daea; background:var(--white); color:#12163E; animation:rise .35s both; }
+      .question-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:13px; }
+      .question-number { display:flex; align-items:center; gap:8px; color:var(--blue); font:10px var(--mono); text-transform:uppercase; }
+      .question-topic { margin-left:auto; padding:5px 8px; background:#e9f1fb; color:#1368CE; font:9px var(--mono); text-transform:uppercase; }
+      .question-number::before { content:""; width:8px; height:8px; border-radius:2px; background:var(--red); transform:rotate(45deg); }
+      .remove-question { width:32px; height:32px; border:1px solid transparent; background:transparent; color:var(--muted); font-size:20px; }
+      .remove-question:hover { border-color:var(--line); color:var(--red); }
+      .question-text { width:100%; min-height:46px; resize:vertical; padding:11px 12px; border:1px solid #d6daea; background:#fff; color:#12163E; font-size:14px; font-weight:600; }
+      .answers { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+      .answer-row { display:flex; align-items:center; gap:8px; min-width:0; padding:8px 10px; border:1px solid #d6daea; background:white; }
+      .answer-row:focus-within { border-color:var(--blue); }
+      .answer-row input[type="radio"] { width:15px; height:15px; flex:none; margin:0; accent-color:var(--blue); }
+      .answer-row input[type="text"] { width:100%; min-width:0; padding:3px 0; border:0; background:transparent; font-size:12px; }
+      .answer-row input[type="text"]:focus-visible { outline:0; }
+      .answer-row:has(input[type="radio"]:checked) { border-color:var(--blue); background:#e9f1fb; }
+      .card-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; color:var(--muted); font-size:11px; }
+      .card-foot label { display:flex; align-items:center; gap:8px; }
+      .card-foot select,.type-select,.timeline-fields input { padding:8px 10px; border:1px solid #d6daea; background:white; color:#12163E; font:11px var(--mono); }
+      .type-select { width:100%; margin-bottom:12px; }
+      .timeline-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:11px; }
+      .timeline-fields label { display:grid; gap:5px; color:var(--muted); font:9px var(--mono); text-transform:uppercase; }
+      .timeline-fields input { min-width:0; width:100%; }
+      .side-panel { position:sticky; top:18px; border:1px solid var(--line); background:var(--panel); color:white; }
+      .side-top { padding:20px 20px 17px; border-bottom:1px solid #d1d4ca; }
+      .side-top label { display:block; margin-bottom:8px; color:var(--green); font:10px var(--mono); text-transform:uppercase; letter-spacing:.08em; }
+      .quiz-title { width:100%; padding:10px 11px; border:1px solid #c9cdc3; background:var(--white); font:600 14px var(--display); }
+      .side-content { padding:16px 20px 20px; }
+      .side-content p { margin:0 0 16px; color:#d5d9e8; font-size:12px; line-height:1.6; }
+      .primary,.secondary,.quiet-button { display:inline-flex; min-height:44px; align-items:center; justify-content:center; gap:9px; border:0; font-weight:700; transition:transform .15s,background .15s; }
+      .primary { width:100%; padding:0 16px; background:var(--blue); color:white; }
+      .primary:hover { background:#0d57b2; transform:translateY(-1px); }
+      .primary:disabled { cursor:not-allowed; opacity:.5; transform:none; }
+      .secondary { padding:0 14px; border:1px solid var(--line); background:var(--panel); color:white; font-size:12px; }
+      .secondary:hover { border-color:var(--lime); }
+      .quiet-button { min-height:38px; padding:0 11px; border:1px solid var(--line); background:transparent; color:white; font-size:12px; }
+      .quiet-button:hover { background:var(--panel); }
+      .save-status { min-height:14px; margin:10px 0 0; color:var(--muted); text-align:center; font:9px var(--mono); }
+      .error { margin:12px 0 0; color:#ff9ea9; font-size:12px; line-height:1.5; }
+      .screen { min-height:70vh; }
+      .screen-heading { display:flex; align-items:end; justify-content:space-between; gap:18px; margin-bottom:25px; padding-bottom:18px; border-bottom:1px solid var(--line); }
+      .screen-heading h1 { margin:0; font-size:clamp(34px,5vw,56px); }
+      .screen-heading .kicker { margin-bottom:8px; }
+      .back-button { flex:none; }
+      .lobby-grid { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(250px,.7fr); gap:22px; }
+      .lobby-main { min-height:400px; padding:28px; background:var(--panel); color:white; }
+      .lobby-main h2 { max-width:520px; margin-bottom:8px; font:600 30px/1.1 var(--display); letter-spacing:-.04em; }
+      .lobby-main > p { color:#d5e0d9; font-size:13px; }
+      .room-code { display:inline-flex; align-items:center; margin:20px 0 25px; padding:9px 13px; background:var(--lime); color:#12163E; font:500 17px var(--mono); letter-spacing:.05em; }
+      .qr-box { display:flex; align-items:center; gap:18px; max-width:440px; padding:14px; background:white; color:#12163E; }
+      .qr-code { width:124px; height:124px; flex:none; display:grid; place-items:center; background:white; }
+      .qr-code img { display:block; width:124px; height:124px; image-rendering:pixelated; }
+      .qr-copy { color:var(--muted); font-size:12px; line-height:1.55; }
+      .qr-copy strong { display:block; margin-bottom:6px; color:var(--ink); font-size:13px; }
+      .connection-note { margin:15px 0 0 !important; color:#d5e0d9 !important; font-size:11px !important; }
+      .player-panel { padding:23px; border:1px solid var(--line); background:var(--panel); color:white; }
+      .player-panel h3 { margin-bottom:5px; font:600 17px var(--display); }
+      .player-subtitle { margin-bottom:16px; color:var(--muted); font-size:11px; }
+      .player-list { display:grid; gap:7px; padding:0; margin:0; list-style:none; }
+      .player-list li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 11px; background:#fff; color:#12163E; font-size:12px; }
+      .player-list li span:last-child { color:var(--blue); font:10px var(--mono); }
+      .player-avatar { margin-right:7px; font-size:18px; vertical-align:middle; }
+      .empty-players { padding:14px 0; color:var(--muted); font-size:12px; }
+      .host-controls { display:flex; gap:9px; margin-top:18px; }
+      .host-controls .primary { width:auto; flex:1; }
+      .play-grid { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:22px; }
+      .play-card { min-height:375px; padding:28px; border:1px solid var(--line); background:var(--white); color:#12163E; }
+      .round-label { margin-bottom:18px; color:var(--blue); font:10px var(--mono); text-transform:uppercase; }
+      .play-question { margin-bottom:25px; font:600 clamp(23px,3vw,34px)/1.16 var(--display); letter-spacing:-.04em; }
+      .answer-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+      .answer-option { min-height:65px; padding:12px 14px; border:0; text-align:left; color:var(--ink); font-size:14px; font-weight:700; }
+      .answer-option:nth-child(4n+1) { background:var(--red); color:white; }
+      .answer-option:nth-child(4n+2) { background:var(--blue); color:white; }
+      .answer-option:nth-child(4n+3) { background:var(--lime); color:#12163E; }
+      .answer-option:nth-child(4n) { background:var(--green); color:white; }
+      .answer-option { font-size:17px; }
+      .answer-option:hover:not(:disabled) { transform:translateY(-2px); filter:saturate(1.15); }
+      .answer-option:disabled { cursor:default; opacity:.72; }
+      .answer-option.is-correct { outline:4px solid #12163E; outline-offset:-4px; }
+      .status-panel { padding:21px; background:var(--panel); color:white; }
+      .status-panel h3 { margin:0 0 7px; font:600 17px var(--display); }
+      .status-panel p { margin-bottom:15px; color:var(--muted); font-size:12px; line-height:1.6; }
+      .leaderboard { display:grid; gap:7px; padding:0; margin:0; list-style:none; }
+      .leaderboard li { display:grid; grid-template-columns:25px 1fr auto; align-items:center; gap:8px; padding:9px; background:var(--white); color:#12163E; font-size:11px; }
+      .leaderboard .rank { color:var(--blue); font:10px var(--mono); }
+      .leaderboard .score { font:10px var(--mono); }
+      .waiting-message { margin-top:17px; color:var(--muted); font-size:12px; }
+      .finish-panel { max-width:700px; margin:8vh auto 0; padding:35px; background:var(--panel); color:white; text-align:center; animation:questionEnter .4s both; }
+      .finish-panel .kicker { color:var(--lime); }
+      .finish-panel h2 { margin-bottom:8px; font:600 clamp(35px,6vw,60px)/1 var(--display); letter-spacing:-.06em; }
+      .finish-panel > p { color:#d5e0d9; }
+      .join-screen { max-width:520px; margin:9vh auto 0; padding:30px; border:1px solid var(--line); background:var(--white); color:#12163E; }
+      .join-screen h1 { margin:0 0 8px; font-size:clamp(35px,6vw,55px); }
+      .join-screen > p { color:var(--muted); font-size:13px; line-height:1.6; }
+      .join-screen label { display:block; margin:22px 0 8px; font:10px var(--mono); text-transform:uppercase; }
+      .join-screen input { width:100%; padding:13px; border:1px solid #d6daea; background:#fff; color:#12163E; }
+      .join-screen .primary { margin-top:12px; }
+      .join-quiz-title { margin:0 0 16px; color:var(--blue) !important; font-weight:700; }
+      .avatar-picker { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+      .avatar-choice { aspect-ratio:1; border:1px solid #d6daea; background:white; font-size:24px; }
+      .avatar-choice[aria-pressed="true"] { border:3px solid var(--blue); background:#e9f1fb; }
+      .timeline-game { margin-top:25px; padding:20px; background:#f0f3fa; }
+      .timeline-labels { display:flex; justify-content:space-between; gap:10px; margin-bottom:12px; color:#12163E; font:12px var(--mono); }
+      .timeline-labels strong { color:var(--blue); font-size:19px; }
+      .timeline-range { width:100%; accent-color:var(--blue); }
+      .timeline-submit { margin-top:15px; }
+      .short-answer-response { width:100%; min-height:46px; padding:11px 12px; border:1px solid #d6daea; background:white; color:#12163E; font-size:14px; }
+      .short-answer-submit { margin-top:10px; }
+      .timeline-preview { padding:20px; background:#e9eff9; color:#12163E; }
+      .timeline-line { position:relative; height:5px; margin:24px 12px; background:var(--blue); }
+      .timeline-line::before,.timeline-line::after { position:absolute; top:50%; width:14px; height:14px; border:3px solid white; border-radius:50%; background:var(--blue); content:""; transform:translateY(-50%); }
+      .timeline-line::before { left:0; }
+      .timeline-line::after { right:0; }
+      .timeline-target { position:absolute; top:50%; width:16px; height:16px; border:3px solid white; border-radius:50%; background:var(--red); transform:translate(-50%,-50%); }
+      .question-enter { animation:questionEnter .42s cubic-bezier(.2,.7,.2,1) both; }
+      .participant-status { margin-top:16px; color:var(--muted); text-align:center; font-size:12px; }
+      .participant-result { margin:20px 0; padding:18px; background:#fff; color:#12163E; text-align:center; }
+      .participant-result strong { display:block; margin-bottom:6px; color:var(--green); font:700 25px var(--display); }
+      .participant-total-score { display:block; color:#4d5576; font:12px var(--mono); }
+      .participant-correct-answer { display:block; margin-top:12px; color:#4d5576; font-size:12px; }
+      .podium-heading { margin:24px 0 9px; color:#fff; text-align:left; font:600 13px var(--sans); }
+      .toast { position:fixed; right:22px; bottom:22px; z-index:4; max-width:min(360px,calc(100% - 44px)); padding:13px 16px; background:var(--ink); color:white; font-size:12px; box-shadow:0 8px 24px #17231d29; animation:rise .2s both; }
+      .footer { margin-top:60px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font:9px var(--mono); letter-spacing:.04em; }
+      @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+      @keyframes questionEnter { from { opacity:0; transform:translateY(18px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+      @media (max-width:800px) { main { padding-top:44px; } .intro { gap:25px; } .home-actions { grid-template-columns:1fr; align-items:stretch; gap:13px; } .join-box { grid-template-columns:1fr; gap:7px; } .join-hint { grid-column:1; margin:0; } .home-action { width:100%; justify-self:stretch; margin-top:0; } .editor { grid-template-columns:1fr; } .side-panel { position:static; } .lobby-grid,.play-grid { grid-template-columns:1fr; } .lobby-main { min-height:0; } .screen-heading { align-items:start; } }
+      @media (max-width:520px) { .topbar { height:60px; padding-inline:5%; } main { width:90%; padding-top:34px; } h1 { font-size:49px; } .intro { grid-template-columns:1fr; gap:23px; margin-bottom:24px; } .game-preview { min-height:238px; padding:17px; } .home-actions { grid-template-columns:1fr; gap:9px; margin-top:20px; } .home-action { min-height:44px; padding:0 16px; } .answers,.answer-options { grid-template-columns:1fr; } .question-card { padding:14px; } .card-foot { align-items:start; flex-direction:column; } .screen-heading { flex-direction:column; } .lobby-main,.play-card { padding:21px; } .qr-box { align-items:start; gap:12px; } .qr-code,.qr-code img { width:104px; height:104px; } .host-controls { flex-direction:column; } .host-controls .primary { width:100%; } .join-screen { padding:23px; } }
+      @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
     </style>
   </head>
   <body>
     <header class="topbar">
-      <a class="wordmark" href="#home" aria-label="Bright House Energy home" data-i18n-aria="brandHome"><span class="wordmark-mark">B</span> Bright House <span class="wordmark-suffix">Energy</span></a>
-      <div class="topbar-actions">
-        <div class="language-switch" role="group" aria-label="Choose language" data-i18n-aria="languageSelector">
-          <button type="button" data-language="en" aria-pressed="false" aria-label="English">EN</button>
-          <button type="button" data-language="nl" aria-pressed="true" aria-label="Nederlands">NL</button>
-          <button type="button" data-language="fr" aria-pressed="false" aria-label="Français">FR</button>
-        </div>
-        <button class="menu-toggle" type="button" aria-label="Menu openen" data-i18n-aria="menuToggle" aria-expanded="false" aria-controls="site-menu">
-          <span class="menu-label" data-i18n="menu">Menu</span><span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
-        </button>
-      </div>
+      <a class="brand" href="./" aria-label="Zotte Familie Quizzes startpagina"><span class="brand-mark">Z</span><span>Zotte Familie Quizzes</span></a>
     </header>
-
-    <nav class="menu-panel" id="site-menu" aria-label="Main navigation" data-i18n-aria="navigation" inert>
-      <span class="menu-kicker" data-i18n="navIntro">Home battery storage</span>
-      <div class="menu-links">
-        <a href="#benefits"><span data-i18n="navBenefits">Why a home battery</span><span aria-hidden="true"> ↗</span></a>
-        <a href="#how"><span data-i18n="navHow">How it works</span><span aria-hidden="true"> ↗</span></a>
-        <a href="#assessment"><span data-i18n="navAdvice">Advice</span><span aria-hidden="true"> ↗</span></a>
-      </div>
-      <div class="menu-bottom"><span data-i18n="menuNote">Gebruik meer van je eigen zonnestroom.</span><a class="menu-contact" href="https://forms.gle/DbxtDKChzLVAiyuH7" target="_blank" rel="noopener noreferrer"><span data-i18n="contactCta">Contactformulier</span><span aria-hidden="true">↗</span></a></div>
-    </nav>
-
     <main>
-      <section class="hero" id="home">
-        <div class="hero-scene">
-          <div class="home-illustration photo-placeholder" aria-hidden="true"></div>
-          <div class="hero-copy">
-            <h1 class="hero-editable" contenteditable="true" role="textbox" aria-label="Hero headline. Click and type to edit." aria-multiline="true" data-hero-copy="headline" data-placeholder="Click here and type your headline" data-placeholder-key="heroHeadlinePlaceholder" data-aria-label-key="heroHeadlineLabel"></h1>
-            <p class="hero-description hero-editable" contenteditable="true" role="textbox" aria-label="Hero description. Click and type to edit." aria-multiline="true" data-hero-copy="description" data-placeholder="Click here and type a short description" data-placeholder-key="heroDescriptionPlaceholder" data-aria-label-key="heroDescriptionLabel"></p>
-            <a class="hero-cta" href="#contact"><span class="hero-editable" contenteditable="true" role="textbox" aria-label="Button label. Click and type to edit." aria-multiline="false" data-hero-copy="button" data-placeholder="Type button text" data-placeholder-key="heroButtonPlaceholder" data-aria-label-key="heroButtonLabel"></span><span aria-hidden="true">↗</span></a>
-          </div>
-        </div>
-        <div class="hero-facts">
-          <span><i aria-hidden="true">01</i><span data-i18n="heroFactOne">Store surplus solar power</span></span>
-          <span><i aria-hidden="true">02</i><span data-i18n="heroFactTwo">Use it when you need it</span></span>
-          <a href="#benefits"><span data-i18n="scrollLabel">Explore the benefits</span><span aria-hidden="true">↓</span></a>
-        </div>
-      </section>
-
-      <section class="section intro reveal" id="benefits">
-        <div class="intro-story">
-          <span class="section-label" data-i18n="benefitsLabel">01 / Home energy storage</span>
-          <h2><span data-i18n="benefitsTitleOne">Use more of</span><br><em data-i18n="benefitsTitleTwo">your own solar.</em></h2>
-          <div class="intro-copy">
-            <p data-i18n="benefitsCopyOne">When your solar panels produce more electricity than your home is using, a compatible home battery can store some of that surplus.</p>
-            <p data-i18n="benefitsCopyTwo">Use stored energy later, when your panels are producing less. The amount you can store depends on your system and household use.</p>
-            <a href="#how" class="text-link"><span data-i18n="benefitsLink">How battery storage works</span> <span aria-hidden="true">↗</span></a>
-          </div>
-        </div>
-        <article class="featured-battery">
-          <div class="featured-battery-art photo-placeholder" aria-hidden="true"></div>
-          <div class="featured-battery-body">
-            <div class="featured-battery-meta"><span data-i18n="featuredLabel">A closer look</span><span>01</span></div>
-            <h3 data-i18n="featuredTitle">Home battery storage</h3>
-            <p data-i18n="featuredCopy">Store part of your solar surplus and use it later, depending on your system and household demand.</p>
-            <a href="#how"><span data-i18n="featuredLink">See how it works</span><span aria-hidden="true">↗</span></a>
-          </div>
-        </article>
-      </section>
-
-      <section class="section work reveal">
-        <div class="work-heading">
-          <div class="section-heading-copy"><span class="section-label" data-i18n="whyLabel">02 / What a battery can do</span><h2 data-i18n="whyTitle">Put stored solar energy to use.</h2></div>
-          <p data-i18n="whyDescription">A home battery can help you use more of the electricity your panels produce. What makes sense depends on your home.</p>
-        </div>
-        <div class="benefit-grid">
-          <article class="benefit">
-            <span class="benefit-icon" aria-hidden="true">01</span>
-            <h3 data-i18n="benefitOneTitle">Use solar after sunset</h3>
-            <p data-i18n="benefitOneCopy">Store some of your daytime surplus and use it in the evening, subject to the battery’s available charge.</p>
-          </article>
-          <article class="benefit">
-            <span class="benefit-icon" aria-hidden="true">02</span>
-            <h3 data-i18n="benefitTwoTitle">Shift when you use energy</h3>
-            <p data-i18n="benefitTwoCopy">A battery can help move some electricity use beyond daylight hours. Results depend on your routine and energy plan.</p>
-          </article>
-          <article class="benefit">
-            <span class="benefit-icon" aria-hidden="true">03</span>
-            <h3 data-i18n="benefitThreeTitle">Plan around your home</h3>
-            <p data-i18n="benefitThreeCopy">Battery size and compatibility depend on your solar installation, electricity use and available space.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="section work reveal" id="how">
-        <div class="work-heading">
-          <div class="section-heading-copy"><span class="section-label" data-i18n="howLabel">03 / How it works</span><h2 data-i18n="howTitle">Three steps to stored solar power.</h2></div>
-        </div>
-        <div class="flow">
-          <article class="flow-step"><span class="flow-number">01 — <span data-i18n="stepDay">DAYTIME</span></span><h3 data-i18n="stepOneTitle">Solar powers your home first</h3><p data-i18n="stepOneCopy">Your panels supply the electricity your home needs. Surplus can charge a connected battery.</p></article>
-          <article class="flow-step"><span class="flow-number">02 — <span data-i18n="stepStore">STORAGE</span></span><h3 data-i18n="stepTwoTitle">The battery stores surplus</h3><p data-i18n="stepTwoCopy">The battery stores available excess energy, up to its capacity and charging limits.</p></article>
-          <article class="flow-step"><span class="flow-number">03 — <span data-i18n="stepEvening">LATER</span></span><h3 data-i18n="stepThreeTitle">Use stored energy later</h3><p data-i18n="stepThreeCopy">When solar production drops, your home can use the stored electricity. The grid can supply any shortfall.</p></article>
-        </div>
-        <div class="photo-carousel" aria-label="Fotogalerij" data-i18n-aria="galleryLabel">
-          <div class="photo-gallery-page">
-            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 1"></div>
-            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 2"></div>
-            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 3"></div>
-            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 4"></div>
-            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 5"></div>
-            <div class="gallery-photo photo-placeholder" role="img" aria-label="Foto 6"></div>
-          </div>
-        </div>
-        <a class="gallery-options-link" href="mogelijkheden.html" target="_blank" rel="noopener noreferrer" data-i18n="allOptionsCta">Bekijk alle mogelijkheden</a>
-      </section>
-
-      <section class="assessment reveal" id="assessment">
-        <div><span class="section-label" data-i18n="assessmentLabel">Before choosing a battery</span><h2 data-i18n="assessmentTitle">Start with your energy use.</h2></div>
-        <p data-i18n="assessmentCopy">The right system depends on your solar production, household consumption, tariff and installation. A home assessment can help establish whether storage is a good fit.</p>
-      </section>
-
-      <section class="contact" id="contact">
-        <div class="contact-top reveal">
+      <section id="homeScreen" class="screen">
+        <div class="intro">
           <div>
-            <span class="section-label" data-i18n="contactLabel">Discuss your home</span>
-            <h2><span data-i18n="contactLineOne">Find the right</span><br><span data-i18n="contactLineTwo">battery setup.</span></h2>
-            <a class="contact-link" href="https://forms.gle/DbxtDKChzLVAiyuH7" target="_blank" rel="noopener noreferrer"><span data-i18n="contactCta">Request a home assessment</span></a>
+            <p class="kicker">Zotte Familie / start</p>
+            <h1>Jouw quiz.<br><span>Jouw ronde.</span></h1>
+            <p class="intro-copy">Maak een quiz op jouw manier, nodig spelers uit met een QR-code en speel samen. Gratis, zonder account.</p>
           </div>
-          <span class="section-label" data-i18n="contactAside">Share a little about<br>your solar setup.</span>
+          <div class="game-preview" role="img" aria-label="Voorbeeld van een quizronde met spelers en vier gekleurde antwoordknoppen">
+            <div class="preview-topline"><span>Zotte Familie / Live ronde</span></div>
+            <div class="preview-players"><div class="preview-avatars" aria-hidden="true"><span>😊</span><span>😎</span><span>👩‍🚀</span><span>🧑‍🎤</span></div><span>iedereen speelt mee</span></div>
+            <p class="preview-question">Klaar voor de eerste vraag?</p>
+            <div class="preview-answers" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span></div>
+          </div>
         </div>
-        <footer class="footer">
-          <a class="wordmark" href="#home" aria-label="Bright House Energy home" data-i18n-aria="brandHome"><span class="wordmark-mark">B</span> Bright House <span class="wordmark-suffix">Energy</span></a>
-          <span data-i18n="footerNote">Home battery storage</span>
-          <div class="footer-links"><a href="#benefits" data-i18n="footerBenefits">Voordelen</a><a href="#how" data-i18n="footerHow">Zo werkt het</a><a class="footer-contact" href="https://forms.gle/DbxtDKChzLVAiyuH7" target="_blank" rel="noopener noreferrer" data-i18n="contactCta">Contactformulier</a><a href="#home" data-i18n="footerTop">Terug naar boven ↑</a></div>
-        </footer>
+        <div class="home-actions">
+          <form id="joinByCodeForm" class="join-box">
+            <label for="roomCodeInput">Doe mee met een spel</label>
+            <div class="join-row"><input id="roomCodeInput" autocomplete="off" placeholder="Vul de spelcode in" maxlength="12"><button type="submit" aria-label="Meedoen met code">→</button></div>
+            <p class="join-hint">Of scan de QR-code van de quizmaster.</p>
+          </form>
+          <button id="createQuizButton" class="home-action" type="button"><span class="home-action-icon" aria-hidden="true">＋</span><strong>Nieuwe quiz</strong></button>
+        </div>
+        <section class="my-quizzes" aria-labelledby="myQuizzesHeading">
+          <div class="quiz-list-heading"><h2 id="myQuizzesHeading">Opgeslagen concepten</h2><span id="quizTotal" class="question-count"></span></div>
+          <div id="myQuizList" class="quiz-list"></div>
+          <p id="emptyQuizList" class="empty-quiz-list" hidden>Je quizzen verschijnen hier.</p>
+        </section>
+        <footer class="footer">Zotte Familie Quizzes bewaart je quiz op dit apparaat. Starten en meedoen is gratis.</footer>
+      </section>
+
+      <section id="builderScreen" class="screen" hidden>
+        <div class="screen-heading"><div><p class="kicker">Zotte Familie / studio</p><h1 id="builderHeading">Quiz maken</h1></div><button id="backToHomeButton" class="secondary back-button" type="button">Terug naar mijn quizzen</button></div>
+        <div class="editor">
+          <section class="questions-column">
+            <div class="editor-heading"><h2>Jouw vragen</h2><span id="questionCount" class="question-count"></span></div>
+            <div id="questionList"></div>
+            <button id="addQuestionButton" class="quiet-button" type="button"><span aria-hidden="true">＋</span> Vraag toevoegen</button>
+          </section>
+          <aside class="side-panel">
+            <div class="side-top"><label for="quizTitleInput">Naam van je quiz</label><input id="quizTitleInput" class="quiz-title" maxlength="70" value="Mijn quiz" placeholder="Bijvoorbeeld: Biologie hoofdstuk 3"></div>
+            <div class="side-content">
+              <p>Je quiz wordt automatisch op dit apparaat bewaard. Kies per vraag het juiste antwoord en druk op start om een spelcode en QR-code te maken.</p>
+              <button id="startHostButton" class="primary" type="button">Go live <span aria-hidden="true">↗</span></button>
+              <p id="saveStatus" class="save-status" aria-live="polite">Automatisch opslaan staat aan</p>
+              <p id="editorError" class="error" role="alert" hidden></p>
+            </div>
+          </aside>
+        </div>
+          <footer class="footer">Automatisch opslaan staat aan. Je quiz blijft op dit apparaat bewaard.</footer>
+      </section>
+
+
+      <section id="hostScreen" class="screen" hidden>
+        <div class="screen-heading"><div><p class="kicker">Quizmaster / <span id="hostPhaseLabel">wachtkamer</span></p><h1 id="hostQuizHeading">Jouw quiz</h1></div><button id="closeHostButton" class="secondary back-button" type="button">Quiz afsluiten</button></div>
+        <div id="hostLobby" class="lobby-grid">
+          <section class="lobby-main">
+            <h2>Je quiz is live.</h2><p>Spelers kunnen nu meedoen via de QR-code of spelcode. Start de vragen zodra iedereen klaar is.</p>
+            <div id="hostRoomCode" class="room-code">------</div>
+            <div class="qr-box"><div id="qrCode" class="qr-code" aria-label="QR-code om mee te doen"></div><div class="qr-copy"><strong>Scan om mee te doen</strong>Open de camera van je telefoon en scan deze code. Je deelnemers kiezen zelf een naam.</div></div>
+            <p id="hostConnectionNote" class="connection-note">De quiz blijft live zolang dit scherm openstaat.</p>
+          </section>
+          <aside class="player-panel"><h3>Spelers <span id="playerCount">(0)</span></h3><p class="player-subtitle">Verschijnen hier zodra ze meedoen.</p><ul id="hostPlayerList" class="player-list"></ul><p id="hostLobbyEmpty" class="empty-players">De quizkamer is open. Deel de QR-code of spelcode; de quiz begint zodra jij start.</p><div class="host-controls"><button id="startGameButton" class="primary" type="button" disabled>Wachten op spelers</button></div><p id="hostError" class="error" role="alert" hidden></p></aside>
+        </div>
+        <div id="hostPlay" class="play-grid" hidden>
+          <section class="play-card"><p id="hostRoundLabel" class="round-label"></p><h2 id="hostQuestionText" class="play-question"></h2><div id="hostAnswerOptions" class="answer-options"></div><p id="hostAnswerProgress" class="waiting-message"></p><div class="host-controls"><button id="revealAnswerButton" class="primary" type="button">Toon het antwoord</button><button id="nextQuestionButton" class="primary" type="button" hidden>Volgende vraag <span aria-hidden="true">→</span></button></div></section>
+          <aside class="status-panel"><h3>Top 3</h3><p>Stand na deze vraag</p><ol id="hostLeaderboard" class="leaderboard"></ol></aside>
+        </div>
+        <div id="hostFinished" class="finish-panel" hidden><p class="kicker">Eindstand</p><h2>Dat was 'm!</h2><p>Bedankt voor het meespelen.</p><ol id="finalLeaderboard" class="leaderboard"></ol><button id="returnHomeButton" class="secondary" type="button" style="margin-top:20px">Terug naar je quizzen</button></div>
+      </section>
+
+      <section id="joinScreen" class="screen" hidden>
+        <div class="join-screen">
+          <p class="kicker">Meedoen / Zotte Familie</p><h1>Schuif aan.</h1><p id="joinQuizTitle" class="join-quiz-title"></p><p>Kies een avatar en naam om mee te doen. Je hebt geen account nodig.</p>
+          <form id="joinForm"><label>Kies je avatar</label><div id="avatarPicker" class="avatar-picker" role="group" aria-label="Kies je avatar"><button class="avatar-choice" type="button" data-avatar="😊" aria-pressed="true" aria-label="Blij gezicht">😊</button><button class="avatar-choice" type="button" data-avatar="😎" aria-pressed="false" aria-label="Zonnebril">😎</button><button class="avatar-choice" type="button" data-avatar="👩‍🚀" aria-pressed="false" aria-label="Astronaut">👩‍🚀</button><button class="avatar-choice" type="button" data-avatar="👨‍🎨" aria-pressed="false" aria-label="Kunstenaar">👨‍🎨</button><button class="avatar-choice" type="button" data-avatar="🧑‍🎤" aria-pressed="false" aria-label="Zanger">🧑‍🎤</button><button class="avatar-choice" type="button" data-avatar="🧑‍🚀" aria-pressed="false" aria-label="Ruimtevaarder">🧑‍🚀</button></div><label for="playerNameInput">Jouw naam</label><input id="playerNameInput" maxlength="24" autocomplete="nickname" placeholder="Wat zullen we op het scorebord zetten?" required><button class="primary" type="submit">Meedoen <span aria-hidden="true">→</span></button></form>
+          <p id="joinError" class="error" role="alert" hidden></p>
+        </div>
+      </section>
+
+      <section id="participantScreen" class="screen" hidden>
+        <div class="screen-heading"><div><p class="kicker">Speler / live</p><h1 id="participantQuizHeading">De quiz</h1></div><span id="participantNameBadge" class="room-code"></span></div>
+        <div id="participantWaiting" class="finish-panel"><p class="kicker">Je bent erbij</p><h2>Even wachten...</h2><p>De quizmaster start zo de eerste vraag.</p></div>
+        <div id="participantQuestion" class="play-card" hidden><p id="participantRoundLabel" class="round-label"></p><h2 id="participantQuestionText" class="play-question"></h2><div id="participantAnswerOptions" class="answer-options"></div><p id="participantStatus" class="participant-status"></p></div>
+        <div id="participantResult" class="finish-panel" hidden><p class="kicker">Antwoord</p><h2 id="participantResultTitle"></h2><div class="participant-result"><strong id="participantRoundScore">0 punten deze vraag</strong><span id="participantScore" class="participant-total-score">0 punten totaal</span><span id="participantCorrectAnswer" class="participant-correct-answer"></span></div><p id="participantRank"></p><h3 class="podium-heading">Tussenstand / top 3</h3><ol id="participantLeaderboard" class="leaderboard"></ol></div>
+        <div id="participantFinished" class="finish-panel" hidden><p class="kicker">Eindstand</p><h2>Goed gespeeld!</h2><p id="participantFinalScore"></p><h3 class="podium-heading">Eindstand / top 3</h3><ol id="participantFinalLeaderboard" class="leaderboard"></ol></div>
       </section>
     </main>
-
+    <div id="toast" class="toast" role="status" hidden></div>
+    <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
-      const translations = {
-        en: {
-          pageTitle: "Bright House Energy — Home battery storage",
-          description: "Explore home battery storage for solar energy.",
-          brandHome: "Bright House Energy home",
-          navigation: "Main navigation",
-          languageSelector: "Choose language",
-          menuToggle: "Open menu",
-          menuCloseToggle: "Close menu",
-          languageEnglish: "English",
-          languageDutch: "Dutch",
-          languageFrench: "French",
-          heroHeadlinePlaceholder: "Click here and type your headline",
-          heroHeadlineLabel: "Hero headline. Click and type to edit.",
-          heroDescriptionPlaceholder: "Click here and type a short description",
-          heroDescriptionLabel: "Hero description. Click and type to edit.",
-          heroButtonPlaceholder: "Type button text",
-          heroButtonLabel: "Button label. Click and type to edit.",
-          galleryPhoto: "Photo",
-          allOptionsCta: "View all options",
-          batteryBrand: "BRIGHT HOUSE · ENERGY STORAGE",
-          batteryChargeLabel: "SOLAR SURPLUS",
-          batteryUseLabel: "STORED FOR LATER",
-          batteryCapacity: "HOME BATTERY",
-          tagline: "Home battery systems",
-          headerCta: "Get advice",
-          menu: "Menu",
-          close: "Close",
-          navIntro: "Home battery storage",
-          navHome: "Home",
-          navBenefits: "Benefits",
-          navHow: "How it works",
-          navAdvice: "Advice",
-          navContact: "Contact",
-          breadcrumbLabel: "Breadcrumb",
-          breadcrumbCurrent: "Home battery",
-          menuNote: "Make more use of your solar energy.",
-          menuAvailability: "Advice for your home",
-          heroEyebrow: "Home battery storage",
-          heroLineOne: "Store your",
-          heroLineTwo: "solar power",
-          heroLineThree: "for later.",
-          heroDescription: "Store surplus solar electricity during the day and use it at home later.",
-          heroCta: "Find out what suits your home",
-          galleryLabel: "Photo gallery",
-          heroFactOne: "Store surplus solar power",
-          heroFactTwo: "Use it when you need it",
-          scrollLabel: "Explore the benefits",
-          benefitsLabel: "01 / Home energy storage",
-          benefitsTitleOne: "Use more of",
-          benefitsTitleTwo: "your own solar.",
-          benefitsCopyOne: "When your solar panels produce more electricity than your home is using, a compatible home battery can store some of that surplus.",
-          benefitsCopyTwo: "Use stored energy later, when your panels are producing less. The amount you can store depends on your system and household use.",
-          benefitsLink: "How battery storage works",
-          featuredLabel: "A closer look",
-          featuredTitle: "Home battery storage",
-          featuredCopy: "Store part of your solar surplus and use it later, depending on your system and household demand.",
-          featuredLink: "See how it works",
-          whyLabel: "02 / What a battery can do",
-          whyTitle: "Put stored solar energy to use.",
-          whyDescription: "A home battery can help you use more of the electricity your panels produce. What makes sense depends on your home.",
-          benefitOneTitle: "Use solar after sunset",
-          benefitOneCopy: "Store some of your daytime surplus and use it in the evening, subject to the battery’s available charge.",
-          benefitTwoTitle: "Shift when you use energy",
-          benefitTwoCopy: "A battery can help move some electricity use beyond daylight hours. Results depend on your routine and energy plan.",
-          benefitThreeTitle: "Plan around your home",
-          benefitThreeCopy: "Battery size and compatibility depend on your solar installation, electricity use and available space.",
-          howLabel: "03 / How it works",
-          howTitle: "Three steps to stored solar power.",
-          stepDay: "DAYTIME",
-          stepStore: "STORAGE",
-          stepEvening: "LATER",
-          stepOneTitle: "Solar powers your home first",
-          stepOneCopy: "Your panels supply the electricity your home needs. Surplus can charge a connected battery.",
-          stepTwoTitle: "The battery stores surplus",
-          stepTwoCopy: "The battery stores available excess energy, up to its capacity and charging limits.",
-          stepThreeTitle: "Use stored energy later",
-          stepThreeCopy: "When solar production drops, your home can use the stored electricity. The grid can supply any shortfall.",
-          assessmentLabel: "Before choosing a battery",
-          assessmentTitle: "Start with your energy use.",
-          assessmentCopy: "The right system depends on your solar production, household consumption, tariff and installation. A home assessment can help establish whether storage is a good fit.",
-          contactLabel: "Discuss your home",
-          contactLineOne: "Find the right",
-          contactLineTwo: "battery setup.",
-          contactCta: "Contact form",
-          contactAside: "Share a little about\nyour solar setup.",
-          footerNote: "Home battery storage",
-          footerBenefits: "Benefits",
-          footerHow: "How it works",
-          footerTop: "Back to top ↑"
-        },
-        nl: {
-          pageTitle: "Bright House Energy — Thuisbatterij",
-          description: "Ontdek energieopslag met een thuisbatterij.",
-          brandHome: "Bright House Energy startpagina",
-          navigation: "Hoofdnavigatie",
-          languageSelector: "Kies een taal",
-          menuToggle: "Menu openen",
-          menuCloseToggle: "Menu sluiten",
-          languageEnglish: "Engels",
-          languageDutch: "Nederlands",
-          languageFrench: "Frans",
-          heroHeadlinePlaceholder: "Klik hier en typ je titel",
-          heroHeadlineLabel: "Titel. Klik en typ om te bewerken.",
-          heroDescriptionPlaceholder: "Klik hier en typ een korte beschrijving",
-          heroDescriptionLabel: "Beschrijving. Klik en typ om te bewerken.",
-          heroButtonPlaceholder: "Typ de knoptekst",
-          heroButtonLabel: "Knoptekst. Klik en typ om te bewerken.",
-          galleryLabel: "Fotogalerij",
-          galleryPhoto: "Foto",
-          allOptionsCta: "Bekijk alle mogelijkheden",
-          batteryBrand: "BRIGHT HOUSE · ENERGIEOPSLAG",
-          batteryChargeLabel: "OVERSCHOT ZONNESTROOM",
-          batteryUseLabel: "OPGESLAGEN VOOR LATER",
-          batteryCapacity: "THUISBATTERIJ",
-          tagline: "Thuisbatterijen en energieopslag",
-          headerCta: "Vraag advies",
-          menu: "Menu",
-          close: "Sluiten",
-          navIntro: "Thuisbatterij en opslag",
-          navHome: "Home",
-          navBenefits: "Waarom een thuisbatterij",
-          navHow: "Zo werkt het",
-          navAdvice: "Advies",
-          navContact: "Contact",
-          breadcrumbLabel: "Broodkruimelnavigatie",
-          breadcrumbCurrent: "Thuisbatterij",
-          menuNote: "Gebruik meer van je eigen zonnestroom.",
-          menuAvailability: "Persoonlijk advies voor thuis",
-          heroEyebrow: "Thuisbatterijen en energieopslag",
-          heroLineOne: "Sla je",
-          heroLineTwo: "zonnestroom op",
-          heroLineThree: "voor later.",
-          heroDescription: "Sla overtollige zonnestroom overdag op en gebruik die later in huis.",
-          heroCta: "Ontdek wat bij jouw woning past",
-          heroFactOne: "Sla overtollige zonnestroom op",
-          heroFactTwo: "Gebruik stroom wanneer jij wilt",
-          scrollLabel: "Bekijk de voordelen",
-          benefitsLabel: "01 / Energieopslag voor thuis",
-          benefitsTitleOne: "Gebruik meer van",
-          benefitsTitleTwo: "je eigen zonnestroom.",
-          benefitsCopyOne: "Wekken je zonnepanelen meer stroom op dan je op dat moment verbruikt? Een compatibele thuisbatterij kan een deel van die stroom opslaan.",
-          benefitsCopyTwo: "Gebruik de opgeslagen energie later, wanneer je panelen minder opwekken. Hoeveel je kunt opslaan hangt af van je systeem en verbruik.",
-          benefitsLink: "Zo werkt energieopslag",
-          featuredLabel: "Van dichtbij bekeken",
-          featuredTitle: "Thuisbatterij",
-          featuredCopy: "Sla een deel van je zonnestroom op en gebruik die later, afhankelijk van je systeem en stroomverbruik.",
-          featuredLink: "Bekijk hoe het werkt",
-          whyLabel: "02 / Wat een batterij voor je doet",
-          whyTitle: "Gebruik je opgeslagen zonnestroom.",
-          whyDescription: "Met een thuisbatterij kun je meer van je eigen zonnestroom gebruiken. Wat bij je past hangt af van je woning.",
-          benefitOneTitle: "Gebruik zonnestroom na zonsondergang",
-          benefitOneCopy: "Sla een deel van je dagelijkse overschot op en gebruik het 's avonds, zolang je batterij voldoende geladen is.",
-          benefitTwoTitle: "Verplaats je stroomverbruik",
-          benefitTwoCopy: "Een batterij kan helpen om stroom op andere momenten te gebruiken. Het resultaat hangt af van je verbruik en energiecontract.",
-          benefitThreeTitle: "Afgestemd op jouw woning",
-          benefitThreeCopy: "De capaciteit en geschiktheid hangen af van je zonnepanelen, stroomverbruik en beschikbare ruimte.",
-          howLabel: "03 / Zo werkt het",
-          howTitle: "Zonnestroom opslaan in drie stappen.",
-          stepDay: "OVERDAG",
-          stepStore: "OPSLAG",
-          stepEvening: "LATER",
-          stepOneTitle: "Je zonnepanelen leveren stroom",
-          stepOneCopy: "Je panelen leveren eerst de stroom die je thuis nodig hebt. Overschot kan een aangesloten batterij opladen.",
-          stepTwoTitle: "De batterij slaat overschot op",
-          stepTwoCopy: "De batterij slaat beschikbare extra stroom op, tot de capaciteit en laadlimieten zijn bereikt.",
-          stepThreeTitle: "Gebruik de stroom later",
-          stepThreeCopy: "Wekken je panelen minder op, dan kan je huis de opgeslagen stroom gebruiken. Het stroomnet vult een eventueel tekort aan.",
-          assessmentLabel: "Een batterij kiezen",
-          assessmentTitle: "Begin bij je energieverbruik.",
-          assessmentCopy: "De juiste oplossing hangt af van je zonne-opwek, verbruik, energiecontract en installatie. Met een adviesgesprek kun je bepalen of een batterij bij jouw situatie past.",
-          contactLabel: "Bespreek je thuissituatie",
-          contactLineOne: "Een oplossing",
-          contactLineTwo: "voor jouw huis.",
-          contactCta: "Contactformulier",
-          contactAside: "Vertel ons over\nje zonnestroomsysteem.",
-          footerNote: "Thuisbatterijen en energieopslag",
-          footerBenefits: "Voordelen",
-          footerHow: "Zo werkt het",
-          footerTop: "Terug naar boven ↑"
-        },
-        fr: {
-          pageTitle: "Bright House Energy — Batterie domestique",
-          description: "Découvrez le stockage de l’énergie solaire avec une batterie domestique.",
-          brandHome: "Accueil Bright House Energy",
-          navigation: "Navigation principale",
-          languageSelector: "Choisir la langue",
-          menuToggle: "Ouvrir le menu",
-          menuCloseToggle: "Fermer le menu",
-          languageEnglish: "Anglais",
-          languageDutch: "Néerlandais",
-          languageFrench: "Français",
-          heroHeadlinePlaceholder: "Cliquez ici et saisissez votre titre",
-          heroHeadlineLabel: "Titre principal. Cliquez pour modifier.",
-          heroDescriptionPlaceholder: "Cliquez ici et saisissez une description",
-          heroDescriptionLabel: "Description. Cliquez pour modifier.",
-          heroButtonPlaceholder: "Saisissez le texte du bouton",
-          heroButtonLabel: "Texte du bouton. Cliquez pour modifier.",
-          galleryPhoto: "Photo",
-          allOptionsCta: "Voir toutes les options",
-          batteryBrand: "BRIGHT HOUSE · STOCKAGE D’ÉNERGIE",
-          batteryChargeLabel: "SURPLUS SOLAIRE",
-          batteryUseLabel: "STOCKÉ POUR PLUS TARD",
-          batteryCapacity: "BATTERIE DOMESTIQUE",
-          tagline: "Batteries domestiques",
-          headerCta: "Contact",
-          menu: "Menu",
-          close: "Fermer",
-          navIntro: "Batterie domestique et stockage",
-          navHome: "Accueil",
-          navBenefits: "Avantages",
-          navHow: "Fonctionnement",
-          navAdvice: "Conseils",
-          navContact: "Contact",
-          breadcrumbLabel: "Fil d’Ariane",
-          breadcrumbCurrent: "Batterie domestique",
-          menuNote: "Utilisez davantage votre énergie solaire.",
-          menuAvailability: "Conseils personnalisés pour votre maison",
-          heroEyebrow: "Stockage d’énergie à domicile",
-          heroLineOne: "Stockez votre",
-          heroLineTwo: "énergie solaire",
-          heroLineThree: "pour plus tard.",
-          heroDescription: "Stockez le surplus d’électricité solaire produit pendant la journée pour l’utiliser plus tard chez vous.",
-          heroCta: "Trouvez la solution adaptée à votre maison",
-          heroFactOne: "Stockez le surplus solaire",
-          heroFactTwo: "Utilisez-le quand vous en avez besoin",
-          scrollLabel: "Découvrez les avantages",
-          benefitsLabel: "01 / Stockage d’énergie à domicile",
-          benefitsTitleOne: "Utilisez davantage",
-          benefitsTitleTwo: "votre propre énergie solaire.",
-          benefitsCopyOne: "Lorsque vos panneaux solaires produisent plus d’électricité que votre maison n’en consomme, une batterie compatible peut stocker une partie du surplus.",
-          benefitsCopyTwo: "Utilisez l’énergie stockée lorsque vos panneaux produisent moins. La quantité stockable dépend de votre installation et de votre consommation.",
-          benefitsLink: "Comment fonctionne le stockage",
-          featuredLabel: "En détail",
-          featuredTitle: "Batterie domestique",
-          featuredCopy: "Stockez une partie de votre surplus solaire et utilisez-la plus tard, selon votre installation et vos besoins.",
-          featuredLink: "Voir le fonctionnement",
-          whyLabel: "02 / Les avantages d’une batterie",
-          whyTitle: "Utilisez l’énergie solaire stockée.",
-          whyDescription: "Une batterie domestique peut vous aider à utiliser davantage l’électricité produite par vos panneaux. La solution dépend de votre logement.",
-          benefitOneTitle: "Utilisez l’énergie solaire après le coucher du soleil",
-          benefitOneCopy: "Stockez une partie de votre surplus diurne et utilisez-la le soir, selon le niveau de charge disponible.",
-          benefitTwoTitle: "Décalez votre consommation d’énergie",
-          benefitTwoCopy: "Une batterie peut vous aider à utiliser une partie de l’électricité en dehors des heures d’ensoleillement. Les résultats dépendent de vos habitudes et de votre contrat.",
-          benefitThreeTitle: "Une solution adaptée à votre maison",
-          benefitThreeCopy: "La capacité et la compatibilité dépendent de votre installation solaire, de votre consommation et de l’espace disponible.",
-          galleryLabel: "Galerie de photos",
-          howLabel: "03 / Fonctionnement",
-          howTitle: "Stockez l’énergie solaire en trois étapes.",
-          stepDay: "JOUR",
-          stepStore: "STOCKAGE",
-          stepEvening: "PLUS TARD",
-          stepOneTitle: "Le solaire alimente d’abord votre maison",
-          stepOneCopy: "Vos panneaux fournissent d’abord l’électricité nécessaire à votre maison. Le surplus peut recharger une batterie connectée.",
-          stepTwoTitle: "La batterie stocke le surplus",
-          stepTwoCopy: "La batterie stocke l’énergie excédentaire disponible, dans la limite de sa capacité et de ses limites de charge.",
-          stepThreeTitle: "Utilisez l’énergie plus tard",
-          stepThreeCopy: "Lorsque la production solaire diminue, votre maison peut utiliser l’électricité stockée. Le réseau peut compléter si nécessaire.",
-          assessmentLabel: "Avant de choisir une batterie",
-          assessmentTitle: "Commencez par votre consommation.",
-          assessmentCopy: "La solution adaptée dépend de votre production solaire, de votre consommation, de votre tarif et de votre installation. Un bilan à domicile peut vous aider à déterminer si une batterie vous convient.",
-          contactLabel: "Parlons de votre maison",
-          contactLineOne: "Une solution",
-          contactLineTwo: "pour votre maison.",
-          contactCta: "Formulaire de contact",
-          contactAside: "Parlez-nous de\nvotre installation solaire.",
-          footerNote: "Batteries domestiques et stockage d’énergie",
-          footerBenefits: "Avantages",
-          footerHow: "Fonctionnement",
-          footerTop: "Retour en haut ↑"
-        }
-      };
+      const STORAGE_KEY = "quizkade-library-v1";
+      const LEGACY_STORAGE_KEY = "kwizzy-quiz-draft-v1";
+      const ACTIVE_QUIZ_KEY = "quizkade-active-quiz-v1";
+      const defaultQuiz = { id: "quizkade-mixed-starter-v1", templateVersion: 4, title: "Van alles wat: een makkelijke quiz", questions: [
+        { type: "choice", topic: "Aardrijkskunde", text: "Wat is de hoofdstad van Nederland?", answers: ["Rotterdam", "Amsterdam", "Utrecht", "Den Haag"], correct: 1, seconds: 20 },
+        { type: "choice", topic: "Aardrijkskunde", text: "Wat is de hoofdstad van Frankrijk?", answers: ["Rome", "Madrid", "Parijs", "Berlijn"], correct: 2, seconds: 20 },
+        { type: "choice", topic: "Aardrijkskunde", text: "Welke oceaan is het grootst?", answers: ["De Atlantische Oceaan", "De Stille Oceaan", "De Indische Oceaan", "De Noordelijke IJszee"], correct: 1, seconds: 20 },
+        { type: "choice", topic: "Dieren", text: "Welk dier is een zoogdier dat eieren legt?", answers: ["Het vogelbekdier", "De hond", "De dolfijn", "De kat"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Dieren", text: "Wat maken bijen van nectar?", answers: ["Melk", "Honing", "Brood", "Sap"], correct: 1, seconds: 20 },
+        { type: "choice", topic: "Dieren", text: "Wat is het grootste landdier?", answers: ["De giraf", "De neushoorn", "De olifant", "De leeuw"], correct: 2, seconds: 20 },
+        { type: "choice", topic: "Eten", text: "Met welk land wordt pizza vaak geassocieerd?", answers: ["Italië", "Japan", "Canada", "Zweden"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Eten", text: "Welke vrucht is meestal geel en heeft een schil?", answers: ["Aardbei", "Druif", "Banaan", "Kers"], correct: 2, seconds: 20 },
+        { type: "choice", topic: "Wetenschap", text: "Welke planeet wordt de rode planeet genoemd?", answers: ["Mars", "Venus", "Jupiter", "Neptunus"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Wetenschap", text: "Wat is de gewone naam voor H2O?", answers: ["Zuurstof", "Water", "Suiker", "Zout"], correct: 1, seconds: 20 },
+        { type: "boolean", topic: "Wetenschap", text: "De aarde draait rond de zon.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "boolean", topic: "Dieren", text: "Een spin heeft zes poten.", answers: ["Waar", "Niet waar"], correct: 1, seconds: 20 },
+        { type: "choice", topic: "Sport", text: "Bij welke sport gebruik je een shuttle en rackets?", answers: ["Badminton", "Hockey", "Rugby", "Zwemmen"], correct: 0, seconds: 20 },
+        { type: "boolean", topic: "Sport", text: "Een voetbalteam begint een wedstrijd met elf spelers op het veld.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Cultuur", text: "Welk instrument heeft zwarte en witte toetsen?", answers: ["Trompet", "Piano", "Drumstel", "Fluit"], correct: 1, seconds: 20 },
+        { type: "boolean", topic: "Rekenen", text: "Een week heeft zeven dagen.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Rekenen", text: "Hoeveel is 5 plus 5?", answers: ["8", "9", "10", "11"], correct: 2, seconds: 20 },
+        { type: "timeline", topic: "Geschiedenis", text: "In welk jaar zette de eerste mens voet op de maan?", answers: [], correct: 0, startYear: 1950, endYear: 1990, correctYear: 1969, seconds: 30 },
+        { type: "choice", topic: "Dagelijks", text: "Welke kleur op een verkeerslicht betekent stoppen?", answers: ["Groen", "Geel", "Rood", "Blauw"], correct: 2, seconds: 20 },
+        { type: "choice", topic: "Taal", text: "Wat is het tegenovergestelde van warm?", answers: ["Koud", "Nat", "Snel", "Licht"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Eten", text: "Uit welk land komt sushi oorspronkelijk?", answers: ["Japan", "Italië", "Mexico", "Griekenland"], correct: 0, seconds: 20 },
+        { type: "boolean", topic: "Natuur", text: "Water bevriest bij ongeveer nul graden Celsius.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "boolean", topic: "Ruimte", text: "De maan draait om de aarde.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Muziek", text: "Welk instrument bespeel je vaak met snaren en een plectrum?", answers: ["Gitaar", "Fluit", "Trompet", "Drum"], correct: 0, seconds: 20 },
+        { type: "boolean", topic: "Geschiedenis", text: "Een eeuw duurt honderd jaar.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Aardrijkskunde", text: "Wat is de hoofdstad van Italië?", answers: ["Venetië", "Milaan", "Rome", "Napels"], correct: 2, seconds: 20 },
+        { type: "choice", topic: "Sport", text: "Bij welke sport gooi je de bal door een hoge ring?", answers: ["Basketbal", "Tennis", "Hockey", "Golf"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Rekenen", text: "Hoeveel is 10 plus 2?", answers: ["11", "12", "13", "20"], correct: 1, seconds: 20 },
+        { type: "choice", topic: "Film", text: "Wat voor dier is Simba uit De Leeuwenkoning?", answers: ["Een tijger", "Een leeuw", "Een wolf", "Een beer"], correct: 1, seconds: 20 },
+        { type: "choice", topic: "Tijd", text: "Hoeveel maanden zitten er in een jaar?", answers: ["10", "11", "12", "14"], correct: 2, seconds: 20 },
+        { type: "choice", topic: "Taal", text: "Welke naam schrijf je met een hoofdletter?", answers: ["maandag", "Nederland", "lopen", "vrolijk"], correct: 1, seconds: 20 },
+        { type: "choice", topic: "Ruimte", text: "Welke planeet is het grootst?", answers: ["Mars", "Jupiter", "Aarde", "Venus"], correct: 1, seconds: 20 },
+        { type: "boolean", topic: "Natuur", text: "Planten hebben licht nodig om goed te groeien.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Film", text: "Hoe heet de speelgoedcowboy uit Toy Story?", answers: ["Woody", "Buzz", "Andy", "Rex"], correct: 0, seconds: 20 },
+        { type: "short", topic: "Taal", text: "Welke taal spreken de meeste mensen in Brazilië?", answers: [], correctText: "Portugees", seconds: 30 },
+        { type: "multi", topic: "Dieren", text: "Welke twee dieren leggen eieren?", answers: ["Een kip", "Een hond", "Een schildpad", "Een kat"], correct: 0, correctAnswers: [0, 2], seconds: 30 },
+        { type: "poll", topic: "Muziek", text: "Welk instrument speel je het liefst?", answers: ["Gitaar", "Piano", "Drums", "Fluit"], correct: null, seconds: 20 },
+        { type: "choice", topic: "Rekenen", text: "Hoeveel minuten zitten er in een uur?", answers: ["30", "45", "60", "100"], correct: 2, seconds: 20 },
+        { type: "boolean", topic: "Sport", text: "Bij tennis sla je de bal met een racket.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "short", topic: "Rekenen", text: "Welk getal komt direct na 99?", answers: [], correctText: "100", seconds: 20 },
+        { type: "choice", topic: "Aardrijkskunde", text: "Op welk werelddeel ligt Brazilië?", answers: ["Afrika", "Zuid-Amerika", "Europa", "Azië"], correct: 1, seconds: 20 },
+        { type: "boolean", topic: "Natuur", text: "Vissen leven in water.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "short", topic: "Taal", text: "Wat is het tegenovergestelde van dag?", answers: [], correctText: "nacht", seconds: 20 },
+        { type: "multi", topic: "Eten", text: "Welke twee zijn meestal fruit?", answers: ["Appel", "Wortel", "Banaan", "Aardappel"], correct: 0, correctAnswers: [0, 2], seconds: 30 },
+        { type: "poll", topic: "Dagelijks", text: "Welk seizoen vind jij het fijnst?", answers: ["Lente", "Zomer", "Herfst", "Winter"], correct: null, seconds: 20 },
+        { type: "choice", topic: "Dieren", text: "Hoeveel poten heeft een spin?", answers: ["Zes", "Acht", "Tien", "Twaalf"], correct: 1, seconds: 20 },
+        { type: "boolean", topic: "Techniek", text: "Met een toetsenbord kun je tekst typen.", answers: ["Waar", "Niet waar"], correct: 0, seconds: 20 },
+        { type: "choice", topic: "Aardrijkskunde", text: "Wat is de hoofdstad van Duitsland?", answers: ["Hamburg", "München", "Berlijn", "Keulen"], correct: 2, seconds: 20 },
+        { type: "short", topic: "Rekenen", text: "Hoeveel is 7 plus 3?", answers: [], correctText: "10", seconds: 20 },
+        { type: "multi", topic: "Sport", text: "Welke twee sporten speel je met een bal?", answers: ["Tennis", "Zwemmen", "Hardlopen", "Basketbal"], correct: 0, correctAnswers: [0, 3], seconds: 30 }
+      ] };
+      const screens = { home: document.querySelector("#homeScreen"), builder: document.querySelector("#builderScreen"), host: document.querySelector("#hostScreen"), join: document.querySelector("#joinScreen"), participant: document.querySelector("#participantScreen") };
+      let quizzes = loadQuizzes();
+      let activeQuizId = loadActiveQuizId();
+      let quiz = quizzes.find((item) => item.id === activeQuizId) || quizzes[0];
+      activeQuizId = quiz.id;
+      let hostPeer = null;
+      let hostRoomId = "";
+      let hostPhase = "lobby";
+      let questionIndex = 0;
+      let players = new Map();
+      let guestPeer = null;
+      let guestConnection = null;
+      let guestName = "";
+      let guestAvatar = "😊";
+      let guestPreviousScore = 0;
+      let toastTimer;
 
-      const toggle = document.querySelector(".menu-toggle");
-      const menu = document.querySelector(".menu-panel");
-      const menuLabel = document.querySelector(".menu-label");
-      const savedText = new Map();
-      let savedLanguage = null;
-      try {
-        savedLanguage = localStorage.getItem("brightHouseLanguage");
-      } catch (error) {
-        console.error("Could not restore the saved language.", error);
-      }
-      let currentLanguage = Object.hasOwn(translations, savedLanguage) ? savedLanguage : "nl";
-
-      function localizedStorageKey(id, language) {
-        return `brightHouseText.${id}.${language}`;
+      function makeQuestion(type = "choice") {
+        const answers = type === "boolean" ? ["Waar", "Niet waar"] : ["timeline", "short"].includes(type) ? [] : ["", "", "", ""];
+        return { type, topic: "Algemeen", text: "", answers, correct: type === "poll" ? null : 0, correctAnswers: type === "multi" ? [0] : [], correctText: "", startYear: 1900, endYear: 2020, correctYear: 1969, seconds: 20 };
       }
 
-      function getLocalizedText(id, language) {
+      function createQuizId() {
+        return `quiz-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function normalizeQuiz(saved) {
+        return {
+          id: typeof saved.id === "string" ? saved.id : createQuizId(),
+          templateVersion: Number.isInteger(saved.templateVersion) ? saved.templateVersion : 0,
+          title: typeof saved.title === "string" ? saved.title : "Naamloze quiz",
+          questions: saved.questions.map((question) => ({ ...makeQuestion(question.type || "choice"), ...question, type: question.type || "choice" }))
+        };
+      }
+
+      function loadQuizzes() {
         try {
-          return localStorage.getItem(localizedStorageKey(id, language));
-        } catch (error) {
-          console.error(`Could not restore saved text for "${id}" in ${language}.`, error);
-          return null;
-        }
-      }
-
-      function makeEditable(field, id) {
-        field.contentEditable = "true";
-        field.dataset.editableText = id;
-        const link = field.closest("a");
-        const button = field.closest("button");
-        field.title = link
-          ? "Click to edit this text; Shift-click the link to follow it"
-          : button
-            ? "Click to edit this text; Shift-click to use this control"
-            : "Click to edit this text";
-        const storageKey = `brightHouseText.${id}`;
-        const isTranslated = field.hasAttribute("data-i18n");
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (Array.isArray(saved) && saved.length) {
+            const library = saved.filter((item) => item && Array.isArray(item.questions)).map(normalizeQuiz);
+            if (library.length) return withStarterQuiz(library);
+          }
+        } catch (error) { console.warn("The saved quiz could not be loaded.", error); }
         try {
-          const legacyHeroKey = field.dataset.heroCopy
-            ? `brightHouseHero.${field.dataset.heroCopy}`
-            : null;
-          const oldSaved = localStorage.getItem(storageKey);
-          let saved = isTranslated
-            ? localStorage.getItem(localizedStorageKey(id, currentLanguage))
-            : oldSaved;
-          if (isTranslated && oldSaved !== null && oldSaved !== "tekst") {
-            const currentLanguageKey = localizedStorageKey(id, currentLanguage);
-            const languageSaved = localStorage.getItem(currentLanguageKey);
-            if (languageSaved === null) {
-              const migratedText = currentLanguage === "en" && id === "translation-contactCta-0" && oldSaved.trim().toLowerCase() === "formulier"
-                ? "Contact form"
-                : oldSaved;
-              localStorage.setItem(currentLanguageKey, migratedText);
-              saved = migratedText;
-            } else {
-              saved = languageSaved;
-            }
+          const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY));
+          if (legacy && typeof legacy.title === "string" && Array.isArray(legacy.questions)) {
+            const isUntouchedStarter = legacy.title === "Mijn quiz" && legacy.questions.length === 1 && legacy.questions[0].text === "Wat is de hoofdstad van Nederland?" && legacy.questions[0].answers?.join("|") === "Rotterdam|Amsterdam|Utrecht|Den Haag";
+            if (isUntouchedStarter) return [normalizeQuiz(structuredClone(defaultQuiz))];
+            return withStarterQuiz([normalizeQuiz(legacy)]);
           }
-          if (!isTranslated && saved === null) {
-            saved = legacyHeroKey ? localStorage.getItem(legacyHeroKey) : null;
-          }
-          if (saved !== null && saved !== "tekst") {
-            if (!isTranslated) savedText.set(id, saved);
-            field.textContent = saved;
-          }
-        } catch (error) {
-          console.error(`Could not restore saved text for "${id}".`, error);
-        }
-        field.addEventListener("input", () => {
-          const text = field.textContent;
-          if (!isTranslated) savedText.set(id, text);
-          try {
-            localStorage.setItem(isTranslated ? localizedStorageKey(id, currentLanguage) : storageKey, text);
-          } catch (error) {
-            console.error(`Could not save text for "${id}".`, error);
-          }
-        });
+        } catch (error) { console.warn("The previous quiz could not be migrated.", error); }
+        return [normalizeQuiz(structuredClone(defaultQuiz))];
       }
 
-      const translationFieldCounts = new Map();
-      document.querySelectorAll("[data-i18n]").forEach((field) => {
-        const key = field.dataset.i18n;
-        const occurrence = translationFieldCounts.get(key) || 0;
-        translationFieldCounts.set(key, occurrence + 1);
-        const id = `translation-${key}-${occurrence}`;
-        if (field.closest("a[target='_blank']")) field.dataset.editableText = id;
-        else makeEditable(field, id);
-      });
+      function withStarterQuiz(library) {
+        let starter = library.find((item) => item.id === defaultQuiz.id || item.title === defaultQuiz.title);
+        if (!starter) {
+          starter = normalizeQuiz(structuredClone(defaultQuiz));
+          library.push(starter);
+        } else if (starter.templateVersion < defaultQuiz.templateVersion) {
+          const existingQuestions = new Set(starter.questions.map((question) => question.text));
+          starter.questions.push(...defaultQuiz.questions.filter((question) => !existingQuestions.has(question.text)).map((question) => structuredClone(question)));
+          starter.templateVersion = defaultQuiz.templateVersion;
+        }
+        return library;
+      }
 
-      document.querySelectorAll("[data-hero-copy]").forEach((field) => {
-        makeEditable(field, `hero-${field.dataset.heroCopy}`);
-      });
-
-      const textWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      const textNodes = [];
-      while (textWalker.nextNode()) textNodes.push(textWalker.currentNode);
-      let plainTextIndex = 0;
-      textNodes.forEach((node) => {
-        if (!node.textContent.trim()) return;
-        const parent = node.parentElement;
-        if (!parent || parent.closest("script, style, button, [data-i18n], [data-hero-copy]")) return;
-        const field = document.createElement("span");
-        parent.replaceChild(field, node);
-        field.appendChild(node);
-        makeEditable(field, `plain-${plainTextIndex++}`);
-      });
-
-      document.addEventListener("click", (event) => {
-        const editable = event.target.closest("[contenteditable='true']");
-        if (editable && !event.shiftKey && !editable.closest("a[target='_blank'], .menu-links a, .footer-links a[href='#home']")) event.preventDefault();
-      });
-
-      document.querySelector("[data-hero-copy='button']").addEventListener("keydown", (event) => {
-        if (event.key === "Enter") event.preventDefault();
-      });
-
-      function setLanguage(language) {
-        const copy = translations[language];
-        if (!copy) return;
-
-        currentLanguage = language;
-        document.documentElement.lang = language;
-        document.title = copy.pageTitle;
-        document.querySelector('meta[name="description"]').content = copy.description;
-        document.querySelectorAll("[data-i18n]").forEach((element) => {
-          const text = copy[element.dataset.i18n];
-          if (text !== undefined) {
-            const customText = getLocalizedText(element.dataset.editableText, language);
-            element.textContent = customText === null || customText === "tekst" ? text : customText;
-          }
-        });
-        document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
-          const label = copy[element.dataset.i18nAria];
-          if (label !== undefined) element.setAttribute("aria-label", label);
-        });
-        toggle.setAttribute("aria-label", copy[toggle.getAttribute("aria-expanded") === "true" ? "menuCloseToggle" : "menuToggle"]);
-        document.querySelectorAll("[data-language]").forEach((button) => {
-          const languageNames = { en: copy.languageEnglish, nl: copy.languageDutch, fr: copy.languageFrench };
-          button.setAttribute("aria-label", languageNames[button.dataset.language] || button.dataset.language.toUpperCase());
-        });
-        document.querySelectorAll("[data-language]").forEach((button) => {
-          button.setAttribute("aria-pressed", String(button.dataset.language === language));
-        });
-        const menuText = getLocalizedText(menuLabel.dataset.editableText, language);
-        menuLabel.textContent = menuText === null || menuText === "tekst"
-          ? (toggle.getAttribute("aria-expanded") === "true" ? copy.close : copy.menu)
-          : menuText;
-        document.querySelectorAll("[data-hero-copy][data-placeholder]").forEach((field) => {
-          field.dataset.placeholder = copy[field.dataset.placeholderKey];
-          field.setAttribute("aria-label", copy[field.dataset.ariaLabelKey]);
-        });
-        document.querySelectorAll(".gallery-photo").forEach((photo, index) => {
-          photo.setAttribute("aria-label", `${copy.galleryPhoto} ${index + 1}`);
-        });
+      function loadActiveQuizId() {
         try {
-          localStorage.setItem("brightHouseLanguage", language);
+          const savedId = localStorage.getItem(ACTIVE_QUIZ_KEY);
+          if (quizzes.some((item) => item.id === savedId)) return savedId;
+        } catch (error) { console.warn("The active quiz could not be restored.", error); }
+        return quizzes[0].id;
+      }
+
+      function saveQuiz() {
+        try {
+          const quizIndex = quizzes.findIndex((item) => item.id === activeQuizId);
+          if (quizIndex >= 0) quizzes[quizIndex] = quiz;
+          else quizzes.push(quiz);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(quizzes));
+          localStorage.setItem(ACTIVE_QUIZ_KEY, activeQuizId);
+          document.querySelector("#saveStatus").textContent = "Automatisch opgeslagen op dit apparaat";
         } catch (error) {
-          console.error("Could not save the selected language.", error);
+          document.querySelector("#saveStatus").textContent = "Opslaan is niet beschikbaar in deze browser";
         }
       }
 
-      function setMenuOpen(open) {
-        toggle.setAttribute("aria-expanded", String(open));
-        toggle.setAttribute("aria-label", translations[currentLanguage][open ? "menuCloseToggle" : "menuToggle"]);
-        menu.classList.toggle("is-open", open);
-        menu.inert = !open;
-        document.body.classList.toggle("menu-open", open);
-        const menuText = getLocalizedText(menuLabel.dataset.editableText, currentLanguage);
-        menuLabel.textContent = menuText === null || menuText === "tekst"
-          ? (open ? translations[currentLanguage].close : translations[currentLanguage].menu)
-          : menuText;
-        if (open) menu.querySelector("a").focus();
-        else toggle.focus();
+      function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, (character) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[character]);
       }
 
-      document.querySelectorAll("[data-language]").forEach((button) => {
-        button.addEventListener("click", (event) => {
-          if (event.target.closest("[contenteditable='true']") && !event.shiftKey) return;
-          setLanguage(button.dataset.language);
-        });
-      });
+      function renderAnswerEditor(question, questionIndex) {
+        if (question.type === "timeline") return `<div class="timeline-fields"><label>Van<input data-field="startYear" type="number" value="${question.startYear}" aria-label="Beginjaar"></label><label>Tot<input data-field="endYear" type="number" value="${question.endYear}" aria-label="Eindjaar"></label><label>Juiste jaar<input data-field="correctYear" type="number" value="${question.correctYear}" aria-label="Juiste jaar"></label></div>`;
+        if (question.type === "short") return `<label class="field-label">Juiste antwoord<input class="short-answer-key" data-field="correctText" type="text" maxlength="100" value="${escapeHTML(question.correctText || "")}" placeholder="Typ het antwoord"></label>`;
+        const answers = question.type === "boolean" ? ["Waar", "Niet waar"] : question.answers;
+        const correctnessControl = question.type === "poll" ? "" : question.type === "multi" ? "checkbox" : "radio";
+        return `<div class="answers">${answers.map((answer, answerIndex) => `<label class="answer-row">${correctnessControl ? `<input type="${correctnessControl}" name="correct-${questionIndex}" data-answer-correct="${answerIndex}" ${question.type === "multi" ? `data-answer-multiple="${answerIndex}" ${question.correctAnswers?.includes(answerIndex) ? "checked" : ""}` : `${question.correct === answerIndex ? "checked" : ""}`} aria-label="${question.type === "multi" ? "Markeer als juist antwoord" : "Markeer als juist antwoord"}">` : ""}${question.type === "boolean" ? `<span>${answer}</span>` : `<input type="text" data-answer="${answerIndex}" maxlength="100" value="${escapeHTML(answer)}" placeholder="Antwoord ${answerIndex + 1}" aria-label="Antwoord ${answerIndex + 1}">`}</label>`).join("")}</div>`;
+      }
 
-      toggle.addEventListener("click", (event) => {
-        if (event.target.closest("[contenteditable='true']") && !event.shiftKey) return;
-        setMenuOpen(toggle.getAttribute("aria-expanded") !== "true");
-      });
+      function renderBuilder() {
+        document.querySelector("#quizTitleInput").value = quiz.title;
+        document.querySelector("#builderHeading").textContent = quiz.title || "Quiz maken";
+        document.querySelector("#questionCount").textContent = `${quiz.questions.length} ${quiz.questions.length === 1 ? "vraag" : "vragen"}`;
+        document.querySelector("#questionList").innerHTML = quiz.questions.map((question, questionIndex) => `
+          <article class="question-card" data-question="${questionIndex}">
+            <div class="question-top"><span class="question-number">Vraag ${String(questionIndex + 1).padStart(2, "0")}</span><span class="question-topic">${escapeHTML(question.topic || "Algemeen")}</span><button class="remove-question" type="button" data-action="remove" aria-label="Verwijder vraag ${questionIndex + 1}" title="Verwijder vraag">×</button></div>
+            <label class="field-label" for="questionTopic-${questionIndex}">Thema</label><select id="questionTopic-${questionIndex}" class="type-select" data-field="topic"><option ${question.topic === "Algemeen" ? "selected" : ""}>Algemeen</option><option ${question.topic === "Aardrijkskunde" ? "selected" : ""}>Aardrijkskunde</option><option ${question.topic === "Dieren" ? "selected" : ""}>Dieren</option><option ${question.topic === "Eten" ? "selected" : ""}>Eten</option><option ${question.topic === "Wetenschap" ? "selected" : ""}>Wetenschap</option><option ${question.topic === "Sport" ? "selected" : ""}>Sport</option><option ${question.topic === "Cultuur" ? "selected" : ""}>Cultuur</option><option ${question.topic === "Rekenen" ? "selected" : ""}>Rekenen</option><option ${question.topic === "Geschiedenis" ? "selected" : ""}>Geschiedenis</option><option ${question.topic === "Dagelijks" ? "selected" : ""}>Dagelijks</option><option ${question.topic === "Taal" ? "selected" : ""}>Taal</option><option ${question.topic === "Natuur" ? "selected" : ""}>Natuur</option><option ${question.topic === "Ruimte" ? "selected" : ""}>Ruimte</option><option ${question.topic === "Muziek" ? "selected" : ""}>Muziek</option><option ${question.topic === "Film" ? "selected" : ""}>Film</option><option ${question.topic === "Tijd" ? "selected" : ""}>Tijd</option></select>
+            <label class="field-label" for="questionType-${questionIndex}">Soort vraag</label><select id="questionType-${questionIndex}" class="type-select" data-field="type"><option value="choice" ${question.type === "choice" ? "selected" : ""}>Meerkeuze</option><option value="boolean" ${question.type === "boolean" ? "selected" : ""}>Waar of niet waar</option><option value="timeline" ${question.type === "timeline" ? "selected" : ""}>Jaartal op een tijdlijn</option><option value="short" ${question.type === "short" ? "selected" : ""}>Open antwoord</option><option value="multi" ${question.type === "multi" ? "selected" : ""}>Meerdere juiste antwoorden</option><option value="poll" ${question.type === "poll" ? "selected" : ""}>Peiling</option></select>
+            <textarea class="question-text" data-field="text" maxlength="180" rows="2" placeholder="Typ hier je vraag...">${escapeHTML(question.text)}</textarea>
+            ${renderAnswerEditor(question, questionIndex)}
+            <div class="card-foot"><span>${question.type === "timeline" ? "Kies het jaar dat bij de vraag hoort" : question.type === "short" ? "Antwoorden worden automatisch nagekeken" : question.type === "multi" ? "Markeer alle juiste antwoorden" : question.type === "poll" ? "Peiling: er is geen goed of fout antwoord" : "Markeer het juiste antwoord"}</span><label>Denktijd <select data-field="seconds"><option value="10" ${question.seconds === 10 ? "selected" : ""}>10 sec</option><option value="20" ${question.seconds === 20 ? "selected" : ""}>20 sec</option><option value="30" ${question.seconds === 30 ? "selected" : ""}>30 sec</option><option value="60" ${question.seconds === 60 ? "selected" : ""}>60 sec</option></select></label></div>
+          </article>`).join("");
+        document.querySelector("#addQuestionButton").disabled = quiz.questions.length >= 60;
+      }
 
-      menu.querySelectorAll("a").forEach((link) => {
-        link.addEventListener("click", () => setMenuOpen(false));
-      });
+      function renderQuizList() {
+        const list = document.querySelector("#myQuizList");
+        document.querySelector("#quizTotal").textContent = `${quizzes.length} ${quizzes.length === 1 ? "quiz" : "quizzen"}`;
+        document.querySelector("#emptyQuizList").hidden = quizzes.length > 0;
+        list.innerHTML = quizzes.map((item) => `<div class="quiz-list-item"><button class="quiz-open" type="button" data-open-quiz="${escapeHTML(item.id)}"><span><strong>${escapeHTML(item.title || "Naamloze quiz")}</strong><small>${item.questions.length} ${item.questions.length === 1 ? "vraag" : "vragen"}</small></span><span class="quiz-open-icon" aria-hidden="true">→</span></button></div>`).join("");
+      }
 
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") setMenuOpen(false);
-      });
+      function openQuiz(quizId) {
+        const selectedQuiz = quizzes.find((item) => item.id === quizId);
+        if (!selectedQuiz) return;
+        quiz = selectedQuiz;
+        activeQuizId = selectedQuiz.id;
+        saveQuiz();
+        renderBuilder();
+        setScreen("builder");
+      }
 
-      const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            revealObserver.unobserve(entry.target);
+      function createNewQuiz() {
+        quiz = { id: createQuizId(), title: "Nieuwe quiz", questions: [makeQuestion()] };
+        activeQuizId = quiz.id;
+        quizzes.push(quiz);
+        saveQuiz();
+        renderQuizList();
+        renderBuilder();
+        setScreen("builder");
+        document.querySelector("#quizTitleInput").focus();
+      }
+
+      function setScreen(name) {
+        Object.entries(screens).forEach(([key, screen]) => { screen.hidden = key !== name; });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showToast(message) {
+        const toast = document.querySelector("#toast");
+        toast.textContent = message;
+        toast.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.hidden = true; }, 4000);
+      }
+
+      function setError(selector, message) {
+        const element = document.querySelector(selector);
+        element.textContent = message;
+        element.hidden = !message;
+      }
+
+      function validateQuiz() {
+        if (!quiz.title.trim()) return "Geef je quiz eerst een naam.";
+        if (!quiz.questions.length) return "Voeg minstens één vraag toe.";
+        for (let index = 0; index < quiz.questions.length; index += 1) {
+          const question = quiz.questions[index];
+          if (!question.text.trim()) return `Vul de vraag in bij vraag ${index + 1}.`;
+          if (question.type === "timeline") {
+            if (!Number.isFinite(question.startYear) || !Number.isFinite(question.endYear) || !Number.isFinite(question.correctYear) || question.startYear >= question.endYear || question.correctYear < question.startYear || question.correctYear > question.endYear) return `Controleer de jaartallen bij vraag ${index + 1}.`;
+          } else if (question.type === "short") {
+            if (!question.correctText?.trim()) return `Vul het juiste antwoord in bij vraag ${index + 1}.`;
+          } else {
+            const answers = question.type === "boolean" ? ["Waar", "Niet waar"] : question.answers;
+            if (answers.some((answer) => !answer.trim())) return `Vul alle antwoorden in bij vraag ${index + 1}.`;
+            if (question.type === "multi" && (!question.correctAnswers?.length || question.correctAnswers.some((answer) => answer < 0 || answer >= answers.length))) return `Kies alle juiste antwoorden bij vraag ${index + 1}.`;
+            if (question.type !== "multi" && question.type !== "poll" && (question.correct < 0 || question.correct >= answers.length)) return `Kies het juiste antwoord bij vraag ${index + 1}.`;
           }
-        });
-      }, { threshold: 0.14 });
+        }
+        return "";
+      }
 
-      document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
-      setLanguage(currentLanguage);
+      document.querySelector("#questionList").addEventListener("input", (event) => {
+        const card = event.target.closest("[data-question]");
+        if (!card) return;
+        const index = Number(card.dataset.question);
+        if (event.target.matches("[data-field='text']")) quiz.questions[index].text = event.target.value;
+        if (event.target.matches("[data-answer]")) quiz.questions[index].answers[Number(event.target.dataset.answer)] = event.target.value;
+        if (event.target.matches("[data-field='correctText']")) quiz.questions[index].correctText = event.target.value;
+        saveQuiz();
+      });
+
+      document.querySelector("#questionList").addEventListener("change", (event) => {
+        const card = event.target.closest("[data-question]");
+        if (!card) return;
+        const index = Number(card.dataset.question);
+        if (event.target.matches("[data-field='type']")) {
+          const type = event.target.value;
+          quiz.questions[index] = { ...makeQuestion(type), ...quiz.questions[index], type, correct: 0 };
+          if (type === "boolean") quiz.questions[index].answers = ["Waar", "Niet waar"];
+          else if (["timeline", "short"].includes(type)) quiz.questions[index].answers = [];
+          else quiz.questions[index].answers = ["", "", "", ""];
+          if (type === "poll") quiz.questions[index].correct = null;
+          if (type === "multi") quiz.questions[index].correctAnswers = [0];
+          renderBuilder();
+          saveQuiz();
+          return;
+        }
+        if (event.target.matches("[data-answer-correct]")) quiz.questions[index].correct = Number(event.target.dataset.answerCorrect);
+        if (event.target.matches("[data-answer-multiple]")) {
+          const selected = new Set(quiz.questions[index].correctAnswers || []);
+          const answerIndex = Number(event.target.dataset.answerMultiple);
+          if (event.target.checked) selected.add(answerIndex);
+          else selected.delete(answerIndex);
+          quiz.questions[index].correctAnswers = [...selected];
+        }
+        if (event.target.matches("[data-field='topic']")) quiz.questions[index].topic = event.target.value;
+        if (event.target.matches("[data-field='seconds']")) quiz.questions[index].seconds = Number(event.target.value);
+        if (event.target.matches("[data-field='startYear']")) quiz.questions[index].startYear = Number(event.target.value);
+        if (event.target.matches("[data-field='endYear']")) quiz.questions[index].endYear = Number(event.target.value);
+        if (event.target.matches("[data-field='correctYear']")) quiz.questions[index].correctYear = Number(event.target.value);
+        saveQuiz();
+      });
+
+      document.querySelector("#questionList").addEventListener("click", (event) => {
+        if (!event.target.closest("[data-action='remove']")) return;
+        const index = Number(event.target.closest("[data-question]").dataset.question);
+        quiz.questions.splice(index, 1);
+        renderBuilder();
+        saveQuiz();
+      });
+
+      document.querySelector("#quizTitleInput").addEventListener("input", (event) => { quiz.title = event.target.value; document.querySelector("#builderHeading").textContent = quiz.title || "Quiz maken"; saveQuiz(); });
+      document.querySelector("#addQuestionButton").addEventListener("click", () => {
+        if (quiz.questions.length >= 60) return;
+        quiz.questions.push(makeQuestion());
+        renderBuilder();
+        saveQuiz();
+        document.querySelector("#questionList article:last-child textarea").focus();
+      });
+
+      function makeRoomCode(peerId) { return peerId.slice(-6).toUpperCase(); }
+
+      function isCorrectAnswer(question, answer) {
+        if (answer === null || answer === undefined || answer === "") return false;
+        if (question.type === "poll") return false;
+        if (question.type === "short") return String(answer).trim().toLocaleLowerCase("nl") === String(question.correctText || "").trim().toLocaleLowerCase("nl");
+        if (question.type === "multi") {
+          if (!Array.isArray(answer)) return false;
+          const submitted = [...new Set(answer.map(Number))].sort((first, second) => first - second);
+          const expected = [...new Set(question.correctAnswers || [])].sort((first, second) => first - second);
+          return submitted.length === expected.length && submitted.every((item, index) => item === expected[index]);
+        }
+        if (question.type !== "timeline") return Number(answer) === Number(question.correct);
+        const tolerance = Math.max(1, Math.round((question.endYear - question.startYear) * 0.025));
+        return Math.abs(Number(answer) - question.correctYear) <= tolerance;
+      }
+
+      function questionTypeLabel(type) {
+        return ({ timeline:"Tijdlijn", boolean:"Waar of niet waar", short:"Open antwoord", multi:"Meerdere antwoorden", poll:"Peiling" })[type] || "Meerkeuze";
+      }
+
+      function animateQuestion(element) {
+        element.classList.remove("question-enter");
+        void element.offsetWidth;
+        element.classList.add("question-enter");
+      }
+
+      function startHosting() {
+        setError("#editorError", "");
+        const issue = validateQuiz();
+        if (issue) { setError("#editorError", issue); return; }
+        if (!window.Peer) { setError("#editorError", "De multiplayerverbinding kon niet laden. Controleer je internetverbinding en laad de pagina opnieuw."); return; }
+        const button = document.querySelector("#startHostButton");
+        button.disabled = true;
+        button.textContent = "Quiz gaat live...";
+        const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+        hostPeer = new Peer(`quizkade${code}`, { debug: 0 });
+        hostPeer.on("open", (id) => {
+          hostRoomId = id;
+          hostPhase = "lobby";
+          questionIndex = 0;
+          players = new Map();
+          document.querySelector("#hostQuizHeading").textContent = quiz.title;
+          document.querySelector("#hostRoomCode").textContent = makeRoomCode(id);
+          document.querySelector("#hostPhaseLabel").textContent = "live / wachtkamer";
+          document.querySelector("#hostLobby").hidden = false;
+          document.querySelector("#hostPlay").hidden = true;
+          document.querySelector("#hostFinished").hidden = true;
+          document.querySelector("#startGameButton").disabled = true;
+          document.querySelector("#qrCode").replaceChildren();
+          const joinUrl = new URL(window.location.href);
+          joinUrl.searchParams.set("join", id);
+          if (window.QRCode) new QRCode(document.querySelector("#qrCode"), { text: joinUrl.href, width: 124, height: 124, colorDark: "#1d2522", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+          else document.querySelector("#qrCode").textContent = "QR-code niet beschikbaar";
+          const isFile = window.location.protocol === "file:";
+          document.querySelector("#hostConnectionNote").textContent = isFile ? "Deze pagina is lokaal geopend. Zet de app op een bereikbare webpagina voordat anderen kunnen scannen." : "De quiz blijft live zolang dit scherm openstaat. Open dit adres op de quizmastercomputer, niet via localhost op je telefoon.";
+          hostPeer.on("connection", handleHostConnection);
+          setScreen("host");
+        });
+        hostPeer.on("error", (error) => {
+          setError("#editorError", `De spelkamer kon niet worden gestart (${error.type}). Probeer het opnieuw.`);
+          button.disabled = false;
+          button.innerHTML = 'Go live <span aria-hidden="true">↗</span>';
+        });
+      }
+
+      function handleHostConnection(connection) {
+        connection.on("data", (message) => {
+          if (!message || typeof message.type !== "string") return;
+          if (message.type === "join") {
+            if (hostPhase !== "lobby") { connection.send({ type: "closed" }); return; }
+            const name = String(message.name || "Speler").trim().slice(0, 24) || "Speler";
+            const avatar = String(message.avatar || "😊").slice(0, 8);
+            players.set(connection.peer, { id: connection.peer, name, avatar, score: 0, connection, answer: null });
+            connection.send({ type: "lobby", title: quiz.title });
+            connection.on("close", () => { players.delete(connection.peer); renderHostPlayers(); });
+            renderHostPlayers();
+            return;
+          }
+          if (message.type === "answer") recordAnswer(connection.peer, message.answer);
+        });
+        connection.on("error", () => { players.delete(connection.peer); renderHostPlayers(); });
+      }
+
+      function renderHostPlayers() {
+        const list = document.querySelector("#hostPlayerList");
+        const entries = [...players.values()];
+        document.querySelector("#playerCount").textContent = `(${entries.length})`;
+        document.querySelector("#hostLobbyEmpty").hidden = entries.length > 0;
+        const startButton = document.querySelector("#startGameButton");
+        startButton.disabled = entries.length === 0;
+        startButton.textContent = entries.length ? `Start de quiz met ${entries.length} ${entries.length === 1 ? "speler" : "spelers"}` : "Wachten op spelers";
+        list.innerHTML = entries.map((player) => `<li><span><span class="player-avatar" aria-hidden="true">${escapeHTML(player.avatar)}</span>${escapeHTML(player.name)}</span><span>${player.score} pts</span></li>`).join("");
+      }
+
+      function broadcast(message) {
+        players.forEach((player) => { if (player.connection.open) player.connection.send(message); });
+      }
+
+      function startGame() {
+        if (!players.size) { showToast("Wacht tot minstens één speler meedoet."); return; }
+        hostPhase = "question";
+        questionIndex = 0;
+        document.querySelector("#hostLobby").hidden = true;
+        document.querySelector("#hostPlay").hidden = false;
+        document.querySelector("#hostPhaseLabel").textContent = "live";
+        showQuestion();
+      }
+
+      function showQuestion() {
+        const question = quiz.questions[questionIndex];
+        players.forEach((player) => { player.answer = null; });
+        const typeLabel = questionTypeLabel(question.type);
+        document.querySelector("#hostRoundLabel").textContent = `${question.topic || "Algemeen"} / ${typeLabel} / vraag ${questionIndex + 1} van ${quiz.questions.length} / ${question.seconds} seconden`;
+        document.querySelector("#hostQuestionText").textContent = question.text;
+        const hostOptions = question.type === "timeline"
+          ? `<div class="timeline-preview"><div class="timeline-labels"><span>${question.startYear}</span><strong>Juiste jaar: ${question.correctYear}</strong><span>${question.endYear}</span></div><div class="timeline-line"><span class="timeline-target" style="left:${((question.correctYear - question.startYear) / (question.endYear - question.startYear)) * 100}%"></span></div></div>`
+          : question.type === "short"
+            ? `<p class="waiting-message">Spelers typen hun antwoord op hun eigen scherm.</p>`
+            : question.answers.map((answer) => `<div class="answer-option">${escapeHTML(answer)}</div>`).join("");
+        document.querySelector("#hostAnswerOptions").innerHTML = hostOptions;
+        animateQuestion(document.querySelector("#hostPlay .play-card"));
+        document.querySelector("#hostAnswerProgress").textContent = `0 van ${players.size} antwoorden binnen`;
+        document.querySelector("#revealAnswerButton").hidden = false;
+        document.querySelector("#nextQuestionButton").hidden = true;
+        renderLeaderboard("#hostLeaderboard");
+        broadcast({ type: "question", questionType: question.type, topic: question.topic || "Algemeen", index: questionIndex, total: quiz.questions.length, question: question.text, answers: question.answers, startYear: question.startYear, endYear: question.endYear, seconds: question.seconds });
+      }
+
+      function recordAnswer(peerId, answer) {
+        const player = players.get(peerId);
+        if (!player || hostPhase !== "question" || player.answer !== null) return;
+        const question = quiz.questions[questionIndex];
+        const validAnswer = question.type === "short"
+          ? typeof answer === "string" && answer.trim().length > 0
+          : question.type === "multi"
+            ? Array.isArray(answer) && answer.length > 0 && answer.every((item) => Number.isInteger(item) && item >= 0 && item < question.answers.length)
+            : Number.isInteger(answer) && answer >= 0 && answer < question.answers.length;
+        if (!validAnswer) return;
+        player.answer = answer;
+        if (isCorrectAnswer(question, answer)) player.score += 1000;
+        const answered = [...players.values()].filter((item) => item.answer !== null).length;
+        document.querySelector("#hostAnswerProgress").textContent = `${answered} van ${players.size} antwoorden binnen`;
+        renderLeaderboard("#hostLeaderboard");
+      }
+
+      function sortedPlayers() { return [...players.values()].sort((first, second) => second.score - first.score || first.name.localeCompare(second.name)); }
+
+      function renderLeaderboard(selector) {
+        const list = document.querySelector(selector);
+        list.innerHTML = sortedPlayers().slice(0, 3).map((player, index) => `<li><span class="rank">${String(index + 1).padStart(2, "0")}</span><span><span class="player-avatar" aria-hidden="true">${escapeHTML(player.avatar)}</span>${escapeHTML(player.name)}</span><span class="score">${player.score} pts</span></li>`).join("");
+      }
+
+      function revealAnswer() {
+        if (hostPhase !== "question") return;
+        hostPhase = "results";
+        const question = quiz.questions[questionIndex];
+        const results = sortedPlayers().map((player) => ({ id: player.id, name: player.name, avatar: player.avatar, score: player.score, answer: player.answer, wasCorrect: isCorrectAnswer(question, player.answer) }));
+        const correctIndices = question.type === "multi" ? question.correctAnswers : [question.correct];
+        document.querySelectorAll("#hostAnswerOptions .answer-option").forEach((option, index) => { if (correctIndices.includes(index)) option.classList.add("is-correct"); });
+        document.querySelector("#revealAnswerButton").hidden = true;
+        document.querySelector("#nextQuestionButton").hidden = false;
+        const correctAnswer = question.type === "timeline" ? String(question.correctYear)
+          : question.type === "short" ? question.correctText
+            : question.type === "multi" ? question.correctAnswers.map((index) => question.answers[index]).join(", ")
+              : question.type === "poll" ? "Dit was een peiling; er is geen goed of fout antwoord."
+                : question.answers[question.correct];
+        document.querySelector("#hostAnswerProgress").textContent = question.type === "poll" ? "Peiling afgerond; deze vraag telt niet mee voor punten." : question.type === "timeline" ? `Juiste jaar: ${correctAnswer}` : `Juist antwoord: ${correctAnswer}`;
+        broadcast({ type: "result", questionType: question.type, correct: question.type === "timeline" ? question.correctYear : question.type === "multi" ? question.correctAnswers : question.correct, correctAnswer, leaderboard: results });
+      }
+
+      function nextQuestion() {
+        questionIndex += 1;
+        if (questionIndex >= quiz.questions.length) { finishGame(); return; }
+        hostPhase = "question";
+        showQuestion();
+      }
+
+      function finishGame() {
+        hostPhase = "ended";
+        broadcast({ type: "ended", leaderboard: sortedPlayers().map((player) => ({ id: player.id, name: player.name, avatar: player.avatar, score: player.score })) });
+        document.querySelector("#hostPlay").hidden = true;
+        document.querySelector("#hostFinished").hidden = false;
+        document.querySelector("#hostPhaseLabel").textContent = "afgelopen";
+        renderLeaderboard("#finalLeaderboard");
+      }
+
+      function leaveHost() {
+        if (hostPeer) { hostPeer.destroy(); hostPeer = null; }
+        players.clear();
+        setScreen("home");
+        document.querySelector("#startHostButton").disabled = false;
+        document.querySelector("#startHostButton").innerHTML = 'Go live <span aria-hidden="true">↗</span>';
+      }
+
+      function openJoin(peerId) {
+        if (!peerId) return;
+        if (!window.Peer) { setScreen("join"); setError("#joinError", "De multiplayerverbinding kon niet laden. Controleer je internetverbinding en laad opnieuw."); return; }
+        window.pendingRoomId = peerId;
+        guestAvatar = "😊";
+        guestPreviousScore = 0;
+        document.querySelectorAll("[data-avatar]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.avatar === guestAvatar)));
+        document.querySelector("#joinQuizTitle").textContent = "Maak verbinding met de quizmaster.";
+        document.querySelector("#joinForm").hidden = false;
+        document.querySelector("#playerNameInput").value = "";
+        setError("#joinError", "");
+        setScreen("join");
+        document.querySelector("#playerNameInput").focus();
+      }
+
+      function connectAsPlayer(name) {
+        const roomId = window.pendingRoomId;
+        guestName = name.trim().slice(0, 24);
+        if (!roomId || !guestName) return;
+        document.querySelector("#joinForm").hidden = true;
+        setError("#joinError", "");
+        document.querySelector("#joinQuizTitle").textContent = "Verbinden met de quizmaster...";
+        guestPeer = new Peer(undefined, { debug: 0 });
+        guestPeer.on("open", () => {
+          guestConnection = guestPeer.connect(roomId, { reliable: true });
+          guestConnection.on("open", () => guestConnection.send({ type: "join", name: guestName, avatar: guestAvatar }));
+          guestConnection.on("data", handleGuestMessage);
+          guestConnection.on("error", () => { document.querySelector("#joinForm").hidden = false; setError("#joinError", "Verbinding mislukt. Controleer de code en probeer opnieuw."); });
+          guestConnection.on("close", () => showToast("De verbinding met de quizmaster is verbroken."));
+        });
+        guestPeer.on("error", (error) => {
+          document.querySelector("#joinForm").hidden = false;
+          setError("#joinError", error.type === "peer-unavailable" ? "Deze quizkamer is niet bereikbaar. Vraag de quizmaster om een nieuwe QR-code." : "Verbinding mislukt. Controleer je internetverbinding en probeer opnieuw.");
+        });
+      }
+
+      function handleGuestMessage(message) {
+        if (!message || typeof message.type !== "string") return;
+        if (message.type === "closed") { setError("#joinError", "Deze quiz is al begonnen en accepteert geen nieuwe spelers meer."); document.querySelector("#joinForm").hidden = false; return; }
+        if (message.type === "lobby") {
+          document.querySelector("#participantQuizHeading").textContent = message.title || "De quiz";
+          document.querySelector("#participantNameBadge").textContent = `${guestAvatar} ${guestName}`;
+          document.querySelector("#participantWaiting").hidden = false;
+          document.querySelector("#participantQuestion").hidden = true;
+          document.querySelector("#participantResult").hidden = true;
+          document.querySelector("#participantFinished").hidden = true;
+          setScreen("participant");
+          return;
+        }
+        if (message.type === "question") {
+          document.querySelector("#participantWaiting").hidden = true;
+          document.querySelector("#participantResult").hidden = true;
+          document.querySelector("#participantFinished").hidden = true;
+          document.querySelector("#participantQuestion").hidden = false;
+          const typeLabel = questionTypeLabel(message.questionType);
+          document.querySelector("#participantRoundLabel").textContent = `${message.topic || "Algemeen"} / ${typeLabel} / vraag ${message.index + 1} van ${message.total} / ${message.seconds} seconden`;
+          document.querySelector("#participantQuestionText").textContent = message.question;
+          document.querySelector("#participantStatus").textContent = "Kies je antwoord op tijd.";
+          const participantOptions = message.questionType === "timeline"
+            ? `<div class="timeline-game"><div class="timeline-labels"><span>${message.startYear}</span><strong id="timelineGuess">${message.startYear}</strong><span>${message.endYear}</span></div><input id="timelineRange" class="timeline-range" type="range" min="${message.startYear}" max="${message.endYear}" value="${message.startYear}" step="1" aria-label="Kies een jaar op de tijdlijn"><button id="submitTimelineAnswer" class="primary timeline-submit" type="button">Bevestig jaartal</button></div>`
+            : message.questionType === "short"
+              ? `<div><input id="shortAnswerResponse" class="short-answer-response" type="text" maxlength="100" placeholder="Typ je antwoord" aria-label="Jouw antwoord"><button id="submitShortAnswer" class="primary short-answer-submit" type="button">Verstuur antwoord</button></div>`
+              : message.questionType === "multi"
+                ? `<div><div class="answers">${message.answers.map((answer, index) => `<label class="answer-row"><input type="checkbox" data-multiple-answer="${index}"><span>${escapeHTML(answer)}</span></label>`).join("")}</div><button id="submitMultipleAnswers" class="primary short-answer-submit" type="button">Verstuur keuzes</button></div>`
+                : message.answers.map((answer, index) => `<button class="answer-option" type="button" data-answer="${index}">${escapeHTML(answer)}</button>`).join("");
+          document.querySelector("#participantAnswerOptions").innerHTML = participantOptions;
+          animateQuestion(document.querySelector("#participantQuestion"));
+          return;
+        }
+        if (message.type === "result") {
+          document.querySelector("#participantQuestion").hidden = true;
+          document.querySelector("#participantResult").hidden = false;
+          const hasPlayerIds = message.leaderboard.some((player) => player.id);
+          const isMe = (player) => hasPlayerIds ? player.id === guestPeer?.id : player.name === guestName;
+          const me = message.leaderboard.find(isMe);
+          const rank = message.leaderboard.findIndex(isMe) + 1;
+          const wasCorrect = me && me.wasCorrect;
+          const totalScore = me ? me.score : guestPreviousScore;
+          const roundScore = me ? totalScore - guestPreviousScore : 0;
+          guestPreviousScore = totalScore;
+          document.querySelector("#participantResultTitle").textContent = message.questionType === "poll" ? "Bedankt voor je stem!" : wasCorrect ? "Goed! Je had het juist." : "Helaas, je had het fout.";
+          document.querySelector("#participantRoundScore").textContent = message.questionType === "poll" ? "Geen punten voor deze peiling" : `${roundScore > 0 ? "+" : ""}${roundScore} punten deze vraag`;
+          document.querySelector("#participantScore").textContent = `${totalScore} punten totaal`;
+          document.querySelector("#participantCorrectAnswer").textContent = message.questionType === "poll" ? message.correctAnswer : `Juiste antwoord: ${message.correctAnswer}`;
+          document.querySelector("#participantRank").textContent = rank ? `Je staat op plek ${rank}.` : "";
+          document.querySelector("#participantLeaderboard").innerHTML = message.leaderboard.slice(0, 3).map((player, index) => `<li><span class="rank">${String(index + 1).padStart(2, "0")}</span><span><span class="player-avatar" aria-hidden="true">${escapeHTML(player.avatar)}</span>${escapeHTML(player.name)}</span><span class="score">${player.score} pts</span></li>`).join("");
+          return;
+        }
+        if (message.type === "ended") {
+          document.querySelector("#participantQuestion").hidden = true;
+          document.querySelector("#participantResult").hidden = true;
+          document.querySelector("#participantWaiting").hidden = true;
+          document.querySelector("#participantFinished").hidden = false;
+          const hasPlayerIds = message.leaderboard.some((player) => player.id);
+          const isMe = (player) => hasPlayerIds ? player.id === guestPeer?.id : player.name === guestName;
+          const rank = message.leaderboard.findIndex(isMe) + 1;
+          const me = message.leaderboard.find(isMe);
+          document.querySelector("#participantFinalScore").textContent = `Je eindigt op plek ${rank || "-"} met ${me ? me.score : 0} punten.`;
+          document.querySelector("#participantFinalLeaderboard").innerHTML = message.leaderboard.slice(0, 3).map((player, index) => `<li><span class="rank">${String(index + 1).padStart(2, "0")}</span><span><span class="player-avatar" aria-hidden="true">${escapeHTML(player.avatar)}</span>${escapeHTML(player.name)}</span><span class="score">${player.score} pts</span></li>`).join("");
+        }
+      }
+
+      document.querySelector("#participantAnswerOptions").addEventListener("click", (event) => {
+        if (event.target.closest("#submitShortAnswer")) {
+          if (!guestConnection || !guestConnection.open) return;
+          const input = document.querySelector("#shortAnswerResponse");
+          if (!input.value.trim()) { document.querySelector("#participantStatus").textContent = "Typ eerst je antwoord."; return; }
+          input.disabled = true;
+          event.target.closest("#submitShortAnswer").disabled = true;
+          document.querySelector("#participantStatus").textContent = "Antwoord verstuurd. Wacht op de quizmaster.";
+          guestConnection.send({ type: "answer", answer: input.value.trim() });
+          return;
+        }
+        if (event.target.closest("#submitMultipleAnswers")) {
+          if (!guestConnection || !guestConnection.open) return;
+          const answers = [...document.querySelectorAll("#participantAnswerOptions [data-multiple-answer]:checked")].map((input) => Number(input.dataset.multipleAnswer));
+          if (!answers.length) { document.querySelector("#participantStatus").textContent = "Kies minstens één antwoord."; return; }
+          document.querySelectorAll("#participantAnswerOptions input,#submitMultipleAnswers").forEach((input) => { input.disabled = true; });
+          document.querySelector("#participantStatus").textContent = "Keuzes verstuurd. Wacht op de quizmaster.";
+          guestConnection.send({ type: "answer", answer: answers });
+          return;
+        }
+        if (event.target.closest("#submitTimelineAnswer")) {
+          if (!guestConnection || !guestConnection.open) return;
+          const range = document.querySelector("#timelineRange");
+          range.disabled = true;
+          event.target.closest("#submitTimelineAnswer").disabled = true;
+          document.querySelector("#participantStatus").textContent = "Jaartal verstuurd. Wacht op de quizmaster.";
+          guestConnection.send({ type: "answer", answer: Number(range.value) });
+          return;
+        }
+        const button = event.target.closest("[data-answer]");
+        if (!button || !guestConnection || !guestConnection.open) return;
+        document.querySelectorAll("#participantAnswerOptions button").forEach((option) => { option.disabled = true; });
+        button.classList.add("is-correct");
+        document.querySelector("#participantStatus").textContent = "Antwoord verstuurd. Wacht op de quizmaster.";
+        guestConnection.send({ type: "answer", answer: Number(button.dataset.answer) });
+      });
+
+      document.querySelector("#participantAnswerOptions").addEventListener("input", (event) => {
+        if (event.target.matches("#timelineRange")) document.querySelector("#timelineGuess").textContent = event.target.value;
+      });
+
+      document.querySelector("#joinForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = document.querySelector("#playerNameInput").value.trim();
+        if (!name) { setError("#joinError", "Vul je naam in om mee te doen."); return; }
+        connectAsPlayer(name);
+      });
+
+      document.querySelector("#joinByCodeForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const code = document.querySelector("#roomCodeInput").value.trim().toUpperCase();
+        if (!/^[A-Z0-9]{6}$/.test(code)) { showToast("Vul de 6 tekens van de spelcode in."); return; }
+        openJoin(`quizkade${code}`);
+      });
+      document.querySelector("#startHostButton").addEventListener("click", startHosting);
+      document.querySelector("#startGameButton").addEventListener("click", startGame);
+      document.querySelector("#revealAnswerButton").addEventListener("click", revealAnswer);
+      document.querySelector("#nextQuestionButton").addEventListener("click", nextQuestion);
+      document.querySelector("#closeHostButton").addEventListener("click", leaveHost);
+      document.querySelector("#returnHomeButton").addEventListener("click", leaveHost);
+      document.querySelector("#createQuizButton").addEventListener("click", createNewQuiz);
+      document.querySelector("#myQuizList").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-open-quiz]");
+        if (button) openQuiz(button.dataset.openQuiz);
+      });
+      document.querySelector("#backToHomeButton").addEventListener("click", () => { renderQuizList(); setScreen("home"); });
+      document.querySelector("#avatarPicker").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-avatar]");
+        if (!button) return;
+        guestAvatar = button.dataset.avatar;
+        document.querySelectorAll("[data-avatar]").forEach((choice) => choice.setAttribute("aria-pressed", String(choice === button)));
+      });
+
+      renderBuilder();
+      saveQuiz();
+      renderQuizList();
+      const joinPeerId = new URLSearchParams(window.location.search).get("join");
+      if (joinPeerId) openJoin(joinPeerId);
     </script>
   </body>
 </html>
